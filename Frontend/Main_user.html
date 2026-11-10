@@ -3,9 +3,46 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="estilos.css">
   <title>CivicFine</title>
 </head>
 <body>
-  <p>Welcome to CivicFine! This is the main user interface.</p>
+  <nav aria-label="Progreso del formulario">
+  <ol id="stepper">
+    <li class="circulo" data-paso="1">Datos personales</li>
+    <li class="circulo" data-paso="2">Detalles</li>
+    <li class="circulo" data-paso="3">Confirmación</li>
+  </ol>
+</nav>
+<form>
+  <div class="paso" data-paso="1">
+    <h2>Foto</h2>
+    <video id="video" autoplay></video>
+    <br>
+    <button id="tomar" required>Tomar foto</button>
+    <br>
+    <input type="text" id="placa" placeholder="Placa" required>
+  <canvas id="lienzo" hidden></canvas>
+  </div>
+  <div class="paso" data-paso="2" hidden>
+    <h2>Detalles</h2>
+      <label for="marca">Marca:</label>
+      <input type="text" id="marca" name="marca" placeholder="Ingrese la marca" required>
+      <label for="modelo">Modelo:</label>
+      <input type="text" id="modelo" name="modelo" placeholder="Ingrese el modelo" required>
+      <label for="color">Color:</label>
+      <input type="text" id="color" name="color" placeholder="Ingrese el color" required>
+      <label for="infraccion">Infracción:</label>
+      <input type="text" id="infraccion" name="infraccion" placeholder="Ingrese la infracción" required>
+  </div>
+  <div class="paso" data-paso="3" hidden>
+    <h2>Confirmación</h2>
+    <p>Revise la información ingresada antes de enviar el formulario.</p>
+    <button id="enviarFormulario">Enviar</button>
+  </div>
+  <button id="anterior">Anterior</button>
+  <button id="siguiente">Siguiente</button>
+</form>
+<script src="formulario.js"></script>
 </body>
 </html>
