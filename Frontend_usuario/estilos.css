@@ -1,0 +1,8 @@
+    body { font-family: sans-serif; text-align: center; padding: 16px; }
+    video { width: 100%; max-width: 480px; border-radius: 8px; background: #000; }
+    button { font-size: 18px; padding: 12px 24px; margin: 12px 0; }
+    input { font-size: 22px; text-align: center; text-transform: uppercase; padding: 8px; width: 100%; max-width: 300px; }
+    canvas { border: 1px solid #ccc; }
+    [hidden] {
+  display: none !important;
+}
