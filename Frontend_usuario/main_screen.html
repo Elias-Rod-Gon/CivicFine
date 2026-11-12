@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CivicFine · Inicio</title>
+  <link rel="stylesheet" href="main_screen.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+<div class="app">
+
+  <!-- Topbar -->
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-logo" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><path d="M12 2 4 5v6c0 5 3.4 9.4 8 11 4.6-1.6 8-6 8-11V5l-8-3z"/></svg>
+      </span>
+      <div>
+        <strong>CivicFine</strong>
+        <small>Zapopan</small>
+      </div>
+    </div>
+    <div class="top-actions">
+      <button class="icon-btn" type="button" aria-label="Notificaciones">
+        <svg viewBox="0 0 24 24"><path d="M6 8a6 6 0 1 1 12 0c0 7 3 8 3 8H3s3-1 3-8"/><path d="M10 20a2 2 0 0 0 4 0"/></svg>
+      </button>
+      <button class="icon-btn" type="button" aria-label="Perfil">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <main class="content">
+
+    <!-- Perfil -->
+    <section class="card profile">
+      <div class="avatar">E</div>
+      <div class="profile-info">
+        <h1>Hola, Elías <span class="verified" title="Verificado">✓</span></h1>
+        <p class="location">📍 Zapopan Centro, Jal.</p>
+      </div>
+    </section>
+
+    <!-- Estadísticas -->
+    <section class="stats">
+      <article class="card stat">
+        <span class="stat-label">Enviados</span>
+        <strong class="stat-value"><span id="v-enviados">0</span> <small>este mes</small></strong>
+        <span class="stat-foot">Reportes enviados</span>
+      </article>
+      <article class="card stat">
+        <span class="stat-label">Multados</span>
+        <strong class="stat-value"><span id="v-multados">0</span> <small>aplicadas</small></strong>
+        <span class="stat-foot" id="v-efectividad">Sin datos aún</span>
+      </article>
+    </section>
+
+    <!-- Banner -->
+    <button class="card banner" type="button" popovertarget="form-reporte">
+      <span class="banner-icon" aria-hidden="true">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2M9 2h6"/></svg>
+      </span>
+      <span class="banner-text">
+        <strong>Vialidad segura y ágil</strong>
+        <span>Reporta en menos de 2 minutos y da seguimiento al instante.</span>
+      </span>
+      <span class="chevron" aria-hidden="true">›</span>
+    </button>
+
+    <!-- Reportes -->
+    <section class="recent">
+      <div class="section-head">
+        <h2>Mis reportes recientes</h2>
+      </div>
+
+      <!-- Estado vacío -->
+      <div class="card empty" id="vacio">
+        <span class="empty-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1M9 11h6M9 15h4"/></svg>
+        </span>
+        <h3>Aún no tienes reportes</h3>
+        <p>Cuando reportes una infracción, aparecerá aquí con su seguimiento en tiempo real.</p>
+        <button class="btn-new" type="button" popovertarget="form-reporte">Crear mi primer reporte</button>
+      </div>
+
+      <!-- Controles: filtro y orden -->
+      <div class="controles" id="controles" hidden>
+        <button class="filter-btn" type="button" popovertarget="filtros">
+          <span id="filtro-actual">Todos (0)</span>
+          <span aria-hidden="true">▾</span>
+        </button>
+      </div>
+
+      <ul class="reports" id="lista" hidden></ul>
+      <p class="sin-filtro" id="sin-filtro" hidden>No hay reportes con este filtro.</p>
+    </section>
+
+  </main>
+
+  <!-- Navegación inferior -->
+  <nav class="bottom-nav" aria-label="Principal">
+    <a href="#" class="nav-item is-active">
+      <svg viewBox="0 0 24 24"><path d="M3 11 12 3l9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>
+      <span>Inicio</span>
+    </a>
+    <div class="nav-center">
+      <button class="fab" type="button" aria-label="Nuevo reporte" popovertarget="form-reporte">
+        <svg viewBox="0 0 24 24"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>
+      </button>
+      <span>Nuevo reporte</span>
+    </div>
+    <a href="#" class="nav-item">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>
+      <span>Perfil</span>
+    </a>
+  </nav>
+
+</div>
+
+<!-- Popover: nuevo reporte -->
+<div id="form-reporte" popover aria-labelledby="form-titulo">
+  <div class="sheet-head">
+    <h2 id="form-titulo">Nuevo reporte</h2>
+    <button class="sheet-close" type="button" popovertarget="form-reporte" popovertargetaction="hide" aria-label="Cerrar">✕</button>
+  </div>
+
+  <form id="form" class="form">
+    <label>
+      <span>Tipo de infracción</span>
+      <select name="tipo" required>
+        <option value="">Selecciona…</option>
+        <option>Estacionado en línea roja</option>
+        <option>Invadir cruce peatonal</option>
+        <option>Bloqueo de rampa para personas con discapacidad</option>
+        <option>Estacionamiento en doble fila</option>
+        <option>Otro</option>
+      </select>
+    </label>
+
+    <label>
+      <span>Placa</span>
+      <input name="placa" required pattern="[A-Za-z]{3}-\d{3}-[A-Za-z]" maxlength="9"
+             placeholder="ABC-123-A" autocomplete="off">
+      <small class="hint">Formato: ABC-123-A</small>
+    </label>
+
+    <label>
+      <span>Dirección o referencia</span>
+      <input name="direccion" required maxlength="120" placeholder="Ej. Av. Hidalgo 420">
+    </label>
+
+    <label>
+      <span>Descripción (opcional)</span>
+      <textarea name="descripcion" rows="3" maxlength="300" placeholder="Detalles que ayuden a la revisión"></textarea>
+    </label>
+
+    <label>
+      <span>Foto de evidencia (opcional)</span>
+      <input type="file" name="foto" accept="image/*" capture="environment">
+      <img id="foto-preview" alt="Vista previa de la foto" hidden>
+    </label>
+
+    <button class="btn-new" type="submit">Enviar reporte</button>
+  </form>
+</div>
+
+<!-- Popover: filtros y orden -->
+<div id="filtros" popover aria-label="Filtros">
+  <div class="sheet-head">
+    <h2>Filtrar y ordenar</h2>
+    <button class="sheet-close" type="button" popovertarget="filtros" popovertargetaction="hide" aria-label="Cerrar">✕</button>
+  </div>
+
+  <fieldset class="opciones">
+    <legend>Estado</legend>
+    <label class="opcion">
+      <input type="radio" name="filtro" value="todos" checked>
+      <span>Todos</span> <b id="n-todos">0</b>
+    </label>
+    <label class="opcion">
+      <input type="radio" name="filtro" value="curso">
+      <span>En curso</span> <b id="n-curso">0</b>
+    </label>
+    <label class="opcion">
+      <input type="radio" name="filtro" value="resueltos">
+      <span>Resueltos</span> <b id="n-resueltos">0</b>
+    </label>
+  </fieldset>
+
+  <fieldset class="opciones">
+    <legend>Orden</legend>
+    <label class="opcion">
+      <input type="radio" name="orden" value="recientes" checked>
+      <span>Más recientes</span>
+    </label>
+    <label class="opcion">
+      <input type="radio" name="orden" value="antiguos">
+      <span>Más antiguos</span>
+    </label>
+  </fieldset>
+</div>
+
+<!-- Popover: detalle de reporte -->
+<div id="detalle" popover aria-labelledby="det-titulo">
+  <div class="sheet-head">
+    <div>
+      <p class="meta" id="det-folio"></p>
+      <h2 id="det-titulo"></h2>
+    </div>
+    <button class="sheet-close" type="button" popovertarget="detalle" popovertargetaction="hide" aria-label="Cerrar">✕</button>
+  </div>
+
+  <img id="det-foto" class="det-foto" alt="Foto de evidencia" hidden>
+  <p class="meta" id="det-meta"></p>
+  <p class="desc" id="det-descripcion"></p>
+
+  <h3 class="seguimiento">Seguimiento</h3>
+  <ol class="pasos" id="det-pasos"></ol>
+</div>
+
+<!-- Aviso breve -->
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+</body>
+</html>
