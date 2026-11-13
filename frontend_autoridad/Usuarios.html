@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Usuarios Activos - CivicFine</title>
+    <link rel="stylesheet" href="usuarios.css">
+</head>
+<body>
+
+<!-- Encabezado Móvil -->
+<div class="mobile-header">
+    <button id="btn-toggle-menu" aria-label="Abrir menú">☰</button>
+    <h2>CivicFine</h2>
+</div>
+
+<!-- Barra lateral -->
+<aside class="sidebar" id="sidebar">
+    <div>
+    <div class="brand">
+        <h2>CivicFine</h2>
+        <span>Zapopan Movilidad</span>
+    </div>
+    <nav class="menu">
+        <small>PANEL AUTORIDAD</small>
+        <a href="index.html">Reportes viales</a>
+        <a href="usuarios.html" class="active">Usuarios activos</a>
+        <a href="#">Estadísticas viales</a>
+    </nav>
+    </div>
+
+    <div class="sidebar-footer">
+        <p><strong id="sidebar-user-name">Sin sesión</strong><br><small id="sidebar-user-area">Dir. de Movilidad, Zapopan</small></p>
+        <button id="btn-logout">Cerrar sesión</button>
+    </div>
+</aside>
+
+<!-- Contenido principal -->
+<main class="content">
+
+    <!-- Topbar -->
+    <header class="topbar">
+    <div class="location-info">
+        <span>Zapopan Gob &gt; Dirección de Movilidad &gt; <strong>Gestión de Personal Operativo</strong></span>
+    </div>
+    <div class="user-profile">
+        <span><strong id="operador-nombre">Sin sesión</strong><br><small id="operador-rol">Operador Activo</small></span>
+    </div>
+    </header>
+
+    <!-- Cabecera de sección y botones -->
+    <section class="page-header">
+    <div>
+        <small class="badge-sector">SECTOR ZAPOPAN CENTRO &amp; METROPOLITANO</small>
+        <h1>Personal operativo y supervisores en línea</h1>
+        <p class="subtitle">Monitoreo en tiempo real del personal asignado a la revisión de infracciones viales en Zapopan</p>
+    </div>
+    <div class="header-actions">
+        <button id="btn-exportar" class="btn-secondary">Exportar registro</button>
+        <button id="btn-agregar" class="btn-primary">+ Agregar nuevo oficial</button>
+    </div>
+    </section>
+
+    <!-- Tarjetas KPI -->
+    <section class="kpi-grid">
+    <article class="card green">
+        <small>Oficiales Activos</small>
+        <strong id="kpi-activos">0</strong>
+        <span>En línea activa</span>
+    </article>
+
+    <article class="card blue">
+        <small>Patrullaje / Calle</small>
+        <strong id="kpi-patrullaje">0</strong>
+        <span>En campo operativo</span>
+    </article>
+
+    <article class="card cyan">
+        <small>Tiempo Promedio Atención</small>
+        <strong id="kpi-tiempo">0.0 <small>min / reporte</small></strong>
+        <span>Meta SLA (&lt; 6.0 min)</span>
+    </article>
+
+    <article class="card dark">
+        <small>Dictámenes Emitidos Hoy</small>
+        <strong id="kpi-dictamenes">0</strong>
+        <span id="kpi-desglose">Aprobadas: 0 | Descartadas: 0</span>
+    </article>
+    </section>
+
+    <!-- Barra de filtros -->
+    <section class="filters">
+    <div class="search-box">
+        <input type="text" id="input-search" placeholder="Buscar por nombre, correo institucional o credencial...">
+    </div>
+
+    <div class="filter-controls">
+        <select id="filter-rol">
+            <option value="todos">Rol: Todos los roles</option>
+            <option value="Supervisor de Dictamen">Supervisor de Dictamen</option>
+            <option value="Inspectora vial">Inspector/a vial</option>
+            <option value="Coordinador Operativo">Coordinador Operativo</option>
+            <option value="Validador técnico">Validador técnico</option>
+        </select>
+
+        <select id="filter-estado">
+            <option value="todos">Estado: Cualquier estado</option>
+            <option value="En línea">En línea</option>
+            <option value="En patrullaje">En patrullaje</option>
+            <option value="Ausente">Ausente</option>
+        </select>
+
+        <button id="btn-refresh" title="Actualizar lista">↻ Actualizar</button>
+    </div>
+    </section>
+
+    <!-- Tabla de funcionarios -->
+    <section class="table-container">
+        <table>
+        <thead>
+            <tr>
+            <th>Funcionario / Oficial</th>
+            <th>Área / Dirección</th>
+            <th>Rol en el sistema</th>
+            <th>Última actividad</th>
+            <th>Estado</th>
+            <th>Acciones operativas</th>
+            </tr>
+        </thead>
+        <tbody id="table-body">
+        <!-- Filas inyectadas por JavaScript -->
+        </tbody>
+    </table>
+    <div class="table-footer">
+        <span id="contador-registros">Mostrando 0 de 0 funcionarios en turno</span>
+    </div>
+    </section>
+
+    <!-- Panel inferior de 3 columnas -->
+    <section class="bottom-widgets">
+    
+    <article class="widget">
+    <div class="widget-header">
+        <h3>Zonas con mayor demanda</h3>
+        <span class="tag">Tiempo real</span>
+    </div>
+        <p class="widget-desc">Distribución de reportes ciudadanos entrantes en los últimos 45 minutos.</p>
+        <ul id="lista-zonas" class="zone-list"></ul>
+    </article>
+
+    <article class="widget">
+        <div class="widget-header">
+            <h3>Despacho Inmediato</h3>
+            <span class="tag green">Auto-Routing</span>
+        </div>
+        <p class="widget-desc">Reasignación inteligente según geolocalización y carga de validación.</p>
+        <div class="capacity-box">
+            <span>Capacidad del turno actual</span>
+            <strong id="capacidad-turno">0% Operativo</strong>
+        </div>
+        <div class="widget-actions">
+            <button id="btn-reasignar" class="btn-secondary">Reasignar turnos</button>
+            <button id="btn-reglas" class="btn-primary">Ajustar reglas</button>
+        </div>
+    </article>
+
+    <article class="widget dark-widget">
+        <div class="widget-header">
+            <h3>Protocolo de Validación</h3>
+        </div>
+        <p>Todo dictamen emitido por inspectores remotos requiere doble verificación fotográfica de placa y señalamiento visible conforme a la Ley de Movilidad del Estado de Jalisco.</p>
+        <div class="widget-meta">
+            <span>Cédulas homologadas</span>
+            <span>Norma 2024-ZAP</span>
+        </div>
+    </article>
+
+    </section>
+
+</main>
+
+<script src="Usuarios.js"></script>
+</body>
+</html>
