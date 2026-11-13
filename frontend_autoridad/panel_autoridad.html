@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<!-- Indica al navegador que este documento usa el estándar moderno HTML5 y está en español -->
+<html lang="es">
+<head>
+    <!-- Permite usar acentos, la letra "ñ" y símbolos especiales sin errores -->
+    <meta charset="UTF-8">
+    <!-- INDISPENSABLE PARA MOBILE-FIRST: Le dice al celular que no haga zoom hacia afuera, 
+    sino que adapte el ancho de la página al ancho real de la pantalla del teléfono -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Bandeja de Reportes Ciudadanos - CivicFine</title>
+    <!-- Conecta este HTML con la hoja de estilos externa -->
+    <link rel="stylesheet" href="panel_autoridad.css">
+</head>
+<body>
+
+<!-- =======================================================================
+1. NAVEGACIÓN MÓVIL Y LATERAL
+======================================================================= -->
+
+<!-- Barra superior exclusiva para celulares. En computadora se oculta con CSS -->
+<div class="mobile-header">
+    <!-- aria-label ayuda a lectores de pantalla para accesibilidad -->
+    <button id="btn-toggle-menu" aria-label="Abrir menú">☰</button>
+    <h2>CivicFine</h2>
+</div>
+
+<!-- <aside> es una etiqueta semántica para contenido lateral o secundario (menú) -->
+<aside class="sidebar" id="sidebar">
+    <div class="brand">
+        <h2>CivicFine</h2>
+        <span>Zapopan Movilidad</span>
+    </div>
+<!-- <nav> agrupa los enlaces principales de navegación -->
+    <nav class="menu">
+    <small>PANEL AUTORIDAD</small>
+    <a href="#" class="active">Reportes viales</a>
+    <a href="#">Usuarios activos</a>
+    <a href="#">Estadísticas viales</a>
+    </nav>
+</aside>
+
+<!-- =======================================================================
+2. ÁREA DE TRABAJO PRINCIPAL
+======================================================================= -->
+
+<!-- <main> indica dónde empieza el contenido central y único de la página -->
+<main class="content">
+
+<!-- <header> representa la cabecera del área de trabajo -->
+    <header class="topbar">
+        <div class="location-info">
+            <!-- El atributo "id" permite que JavaScript encuentre este texto y lo cambie -->
+            <span id="sector-actual">Comité de Monitoreo Urbano &gt; Todos los sectores</span>
+            </div>
+            <div class="user-profile">
+                <span>
+                    <strong id="operador-nombre">Sin sesión</strong><br>
+                    <small id="operador-rol">Operador</small>
+                </span>
+                <button id="btn-actualizar">Actualizar</button>
+            </div>
+        </header>
+
+<!-- <section> agrupa bloques temáticos. Esta sección es para los indicadores (KPIs) -->
+    <section class="dashboard">
+        <h1>Bandeja de reportes ciudadanos</h1>
+        <p class="subtitle">Supervisión y dictamen de infracciones de tránsito en Zapopan</p>
+
+<!-- Contenedor tipo cuadrícula (Grid) para las 4 tarjetas -->
+<div class="kpi-grid">
+    <!-- <article> representa una unidad independiente (cada tarjeta métrica).Usamos dos clases: "card" (estilo base) y "green" (color del borde) -->
+        <article class="card green">
+            <small>Reportes hoy</small>
+            <!-- Inicia en 0; JavaScript calculará el número real -->
+            <strong id="kpi-hoy">0</strong>
+            <span>En revisión</span>
+        </article>
+
+        <article class="card orange">
+            <small>Pendientes de revisión</small>
+            <strong id="kpi-pendientes">0</strong>
+            <span>Requieren atención</span>
+        </article>
+
+        <article class="card red">
+            <small>Multados esta semana</small>
+            <strong id="kpi-multados">0</strong>
+            <span id="kpi-umas">0 UMA acumuladas</span>
+        </article>
+
+        <article class="card gray">
+            <small>Descartados esta semana</small>
+            <strong id="kpi-descartados">0</strong>
+            <span>Evidencia insuficiente</span>
+        </article>
+</div>
+    </section>
+
+    <!-- Sección de controles de búsqueda y filtrado -->
+    <section class="filters">
+        <div class="search-box">
+        <input type="text" id="input-search" placeholder="Buscar folio o placa...">
+        <button id="btn-clear">Limpiar</button>
+</div>
+
+<div class="filter-controls">
+<!-- Envolver el <select> dentro de <label> vincula el texto con el campo automáticamente -->
+        <label>
+            Estado del dictamen:
+            <select id="filter-status">
+            <option value="todos">Todos</option>
+            <option value="revision">En revisión</option>
+            <option value="multado">Multado</option>
+            <option value="descartado">Descartado</option>
+            </select>
+        </label>
+
+        <label>
+            Rango de fechas:
+            <input type="date" id="filter-date">
+        </label>
+
+        <label>
+            Tipo de infracción:
+            <select id="filter-type">
+            <option value="todos">Todas las infracciones</option>
+            <option value="Invasión cruce peatonal">Invasión cruce peatonal</option>
+            <option value="Estacionarse en doble fila">Estacionarse en doble fila</option>
+            <option value="Lugar prohibido">Lugar prohibido</option>
+            <option value="No respetar semáforo">No respetar semáforo</option>
+            </select>
+        </label>
+
+        <label>
+            Sector territorial:
+            <select id="filter-zone">
+            <option value="todos">Todos los sectores</option>
+            <option value="Zapopan Centro">Zapopan Centro</option>
+            <option value="Providencia">Providencia</option>
+            </select>
+        </label>
+</div>
+    </section>
+
+    <!-- Sección de la tabla de datos -->
+    <section class="table-container">
+        <table>
+        <!-- <thead> define los encabezados fijos de las columnas -->
+        <thead>
+            <tr>
+            <th>Folio</th>
+            <th>Placa</th>
+            <th>Tipo de infracción</th>
+            <th>Fecha y hora</th>
+            </tr>
+        </thead>
+        <!-- <tbody> inicia vacío porque JavaScript inyectará aquí las filas <tr> -->
+        <tbody id="table-body"></tbody>
+    </table>
+    </section>
+
+</main>
+
+<!-- Se coloca al final del <body> para asegurar que todo el HTML ya exista antes de que JavaScript intente buscar los elementos por su "id" -->
+<script src="script.js"></script>
+</body>
+</html>
