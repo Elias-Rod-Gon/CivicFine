@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Expediente de Infracción - CivicFine</title>
+<link rel="stylesheet" href="detalle_Reporte.css">
+</head>
+<body>
+    <!-- Encabezado Móvil -->
+    <div class="mobile-header">
+    <button id="btn-toggle-menu" aria-label="Abrir menú">☰</button>
+    <h2>CivicFine</h2>
+</div>
+
+<!-- Barra lateral compartida -->
+<aside class="sidebar" id="sidebar">
+    <div>
+        <div class="brand">
+            <h2>CivicFine</h2>
+            <span>Zapopan Movilidad</span>
+        </div>
+        <nav class="menu">
+        <small>PANEL AUTORIDAD</small>
+        <a href="index.html" class="active">Reportes viales</a>
+        <a href="usuarios.html">Usuarios activos</a>
+        <a href="#">Estadísticas viales</a>
+    </nav>
+    </div>
+
+    <div class="sidebar-footer">
+        <p><strong id="sidebar-user-name">Sin sesión</strong><br><small id="sidebar-user-area">Dir. de Movilidad, Zapopan</small></p>
+    </div>
+</aside>
+
+<!-- Contenido Principal -->
+<main class="content">
+    <!-- Topbar -->
+    <header class="topbar">
+        <div class="location-info">
+        <span id="sector-header">Consola de Monitoreo Urbano &gt; Sector Zapopan Centro</span>
+    </div>
+    <div class="user-profile">
+        <span><strong id="operador-nombre">Sin sesión</strong><br><small id="operador-rol">Operador Activo</small></span>
+    </div>
+    </header>
+    
+    <!-- Navegación de regreso -->
+    <div class="breadcrumb-back">
+        <a href="index.html">&larr; Volver a Reportes viales</a>
+        <span class="sync-status">● Sincronización municipal en vivo</span>
+    </div>
+
+    <!-- Cabecera del Expediente -->
+    <section class="expediente-header">
+        <div>
+        <div class="tags-row">
+            <span class="tag neutral" id="exp-sector">Sector pendiente</span>
+            <span class="tag danger" id="exp-prioridad">Prioridad estándar</span>
+            <small>Folio Cívico Oficial</small>
+        </div>
+        <h1 id="exp-titulo">Expediente de Infracción: ---</h1>
+        <p class="subtitle" id="exp-subtitulo">Cargando información del reporte ciudadano...</p>
+    </div>
+    <div class="status-box">
+        <span class="badge-status" id="exp-estado">EN REVISIÓN</span>
+    </div>
+    </section>
+
+    <!-- Layout de 2 Columnas (Izquierda: Evidencia y Datos | Derecha: Dictamen e Historial) -->
+    <div class="detail-grid">
+        <!-- COLUMNA IZQUIERDA (Principal) -->
+        <div class="left-column">
+
+        <!-- 1. Evidencia Fotográfica (AWS S3) -->
+        <section class="panel">
+            <div class="panel-header">
+            <h2>Evidencia Fotográfica Certificada</h2>
+            <span class="tag green" id="evidencia-hash">Hash SHA-256 Pendiente</span>
+            </div>
+
+            <div class="evidence-viewer">
+            <div class="street-overlay" id="evidencia-calle">Marcador de Calle: Sin ubicación</div>
+            <img id="evidencia-img" src="" alt="Evidencia fotográfica del reporte">
+            <div class="empty-evidence" id="evidencia-placeholder">
+                Sin fotografía cargada desde AWS S3
+            </div>
+            <button id="btn-full-res" class="btn-overlay" disabled>Ver resolución completa</button>
+        </div>
+        
+        <div class="evidence-meta">
+            <span id="evidencia-gps">GPS: 0.00000° N, 0.00000° W</span>
+            <span id="evidencia-fecha">Fecha y hora: --/--/---- --:--</span>
+        </div>
+        </section>
+
+        <!-- 2. Datos del Vehículo y Falta Tipificada -->
+        <section class="panel">
+            <div class="panel-header">
+            <h2>Datos del Vehículo y Falta Tipificada</h2>
+            </div>
+            <div class="vehicle-grid">
+                <div class="plate-card">
+                    <small>PLACA DETECTADA</small>
+                    <div class="plate-box">
+                        <span>JALISCO MÉXICO</span>
+                        <strong id="vehiculo-placa">--- --- -</strong>
+                        <small>AUTOMÓVIL PARTICULAR</small>
+                    </div>
+            </div>
+            
+            <div class="vehicle-specs">
+                <small>TIPO Y COLOR</small>
+                <strong id="vehiculo-tipo">Sin especificar</strong>
+                <p id="vehiculo-color">Color: ---</p>
+                <p id="vehiculo-carroceria">Carrocería: ---</p>
+            </div>
+
+            <div class="affection-card">
+                <small>AFECTACIÓN CRÍTICA</small>
+                <strong id="vehiculo-afectacion">Sin evaluación</strong>
+                <span id="vehiculo-detalle-afectacion">Pendiente de revisión</span>
+            </div>
+        </div>
+        
+        <div class="infraction-box">
+            <small>INFRACCIÓN TIPIFICADA POR SISTEMA</small>
+            <p id="infraccion-descripcion">No se ha seleccionado ninguna infracción.</p>
+        </div>
+
+        <div class="legal-box">
+            <strong>Fundamento Legal Vigente en Zapopan:</strong>
+            <p id="infraccion-fundamento">Art. 138 Fracc. IV y Art. 78 Fracc. IV del Reglamento de Movilidad, Tránsito y Transporte del Municipio de Zapopan, Jalisco.</p>
+        </div>
+        </section>
+
+        <!-- 3. Ubicación Georreferenciada -->
+        <section class="panel">
+            <div class="panel-header">
+            <h2>Ubicación Georreferenciada</h2>
+            <span class="tag neutral" id="mapa-interseccion">Intersección C5 Zapopan</span>
+        </div>
+        <div class="map-container">
+            <div id="mapa-placeholder" class="map-placeholder">
+            Mapa georreferenciado pendiente de coordenadas
+            </div>
+            <div class="map-footer-bar">
+                <div>
+                    <strong id="mapa-direccion">Dirección no disponible</strong>
+                    <small id="mapa-colonia">Zapopan, Jalisco</small>
+                </div>
+                <span class="tag dark" id="mapa-crucero">Cruce Semaforizado</span>
+            </div>
+        </div>
+        </section>
+
+    </div>
+
+    <!-- COLUMNA DERECHA (Dictamen y Seguimiento) -->
+    <aside class="right-column">
+
+        <!-- 1. Determinación de Autoridad -->
+        <section class="panel">
+        <div class="panel-header">
+            <h2>Determinación de Autoridad</h2>
+            <small id="dictamen-oficial-id">Oficial #---</small>
+        </div>
+
+        <!-- Botones de acción principal -->
+        <div class="decision-tabs" id="decision-tabs">
+            <button type="button" data-accion="multar" class="active">Multar</button>
+            <button type="button" data-accion="unidad">Enviar unidad</button>
+            <button type="button" data-accion="descartar">Descartar</button>
+        </div>
+
+        <!-- Selección de UMAs -->
+        <div class="uma-header">
+            <small>Monto de la Sanción Municipal (UMAs 2026)</small>
+            <small id="valor-uma-dia">Valor UMA: $108.57 MXN</small>
+        </div>
+
+        <div class="uma-grid" id="uma-grid">
+            <button type="button" class="uma-card" data-umas="5">
+                <strong>5 UMA</strong>
+                <span class="monto">$542.85 MXN</span>
+                <small>Falta menor / Parcial</small>
+            </button>
+
+            <button type="button" class="uma-card selected" data-umas="10">
+                <strong>10 UMA</strong>
+                <span class="monto">$1,085.70 MXN</span>
+                <small>Rampa bloqueada</small>
+            </button>
+
+            <button type="button" class="uma-card" data-umas="20">
+                <strong>20 UMA</strong>
+                <span class="monto">$2,171.40 MXN</span>
+                <small>Reincidencia / Fuga</small>
+            </button>
+
+            <button type="button" class="uma-card" data-umas="0">
+                <strong>Monto Especial</strong>
+                <span class="monto">Calificación pericial</span>
+                <small>Requiere acta anexa</small>
+            </button>
+        </div>
+        <!-- Notas Jurídicas -->
+        <div class="form-group">
+            <label for="notas-dictamen">
+                <span>Notas y Fundamentación Jurídica del Dictamen *</span>
+                <small>Obligatorio</small>
+            </label>
+            <textarea id="notas-dictamen" rows="4" placeholder="Describa los hechos constatados en la evidencia fotográfica..."></textarea>
+        </div>
+
+        <!-- Checkbox Firma Electrónica -->
+        <label class="checkbox-firma">
+            <input type="checkbox" id="check-firma">
+            <span>Certifico con <strong>Firma Electrónica Municipal Avanzada</strong> que los hechos constatados en la evidencia gráfica son verídicos y procedentes para la emisión de la boleta de infracción.</span>
+        </label>
+
+        <!-- Botón Emitir Boleta -->
+        <button type="button" id="btn-emitir-boleta" class="btn-submit" disabled>
+            Emitir Boleta de Infracción Formal
+        </button>
+        <p class="helper-text">Esta acción notificará al padrón vehicular estatal y al ciudadano denunciante vía SMS/App.</p>
+        </section>
+
+        <!-- 2. Historial de Seguimiento (Timeline) -->
+        <section class="panel">
+        <div class="panel-header">
+            <h2>Historial de Seguimiento</h2>
+            <small id="historial-count">0 Registros</small>
+        </div>
+        <ul class="timeline" id="timeline-list">
+            <!-- Eventos inyectados por JS -->
+        </ul>
+        </section>
+
+        <!-- 3. Antecedentes de la Placa -->
+        <section class="panel compact">
+        <div>
+            <strong id="antecedentes-titulo">Historial de Placa ---</strong>
+            <small id="antecedentes-detalle">Sin antecedentes consultados</small>
+        </div>
+        <button type="button" id="btn-ver-historial" class="btn-secondary">Ver historial</button>
+        </section>
+
+    </aside>
+
+    </div>
+
+</main>
+
+<script src="detalle_Reporte.js"></script>
+</body>
+</html>
