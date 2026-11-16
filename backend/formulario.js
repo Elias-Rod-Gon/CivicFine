@@ -1,17 +1,21 @@
 const express = require('express');
 const router = express.Router();
+const crypto = require('crypto');
+const sharp = require('sharp'); // Compresión de fotos
 const { pool } = require('./db');
+
+// Función helper para generar Hash SHA-256 (64 caracteres)
+function generarHash(dato) {
+  if (!dato) return null;
+  return crypto.createHash('sha256').update(dato.trim().toUpperCase()).digest('hex');
+}
 
 // GET /api/reportes/catalogos
 router.get('/catalogos', async (req, res) => {
   try {
     const municipios = await pool.query('SELECT municipio_id, nombre, estado FROM municipio ORDER BY nombre ASC');
     const infracciones = await pool.query('SELECT tipo_infraccion_id, nombre, descripcion, monto_referencia FROM tipo_infraccion ORDER BY nombre ASC');
-
-    res.json({
-      municipios: municipios.rows,
-      infracciones: infracciones.rows
-    });
+    res.json({ municipios: municipios.rows, infracciones: infracciones.rows });
   } catch (error) {
     console.error('Error al obtener catálogos:', error);
     res.status(500).json({ error: 'Error al cargar catálogos' });
@@ -32,7 +36,7 @@ router.post('/crear', async (req, res) => {
       longitud,
       direccion,
       descripcion,
-      placa_detectada,
+      placa_detectada, // Placa original proveniente del OCR
       marca,
       modelo,
       color,
@@ -43,22 +47,27 @@ router.post('/crear', async (req, res) => {
       return res.status(400).json({ error: 'Faltan campos obligatorios' });
     }
 
+    // Hashing de datos sensibles antes de guardar en PostgreSQL
+    const placaHash = generarHash(placa_detectada);
+    const marcaHash = generarHash(marca);
+    const modeloHash = generarHash(modelo);
+
     await client.query('BEGIN');
 
-    // Registrar o actualizar vehículo si se detectó placa
+    // Registrar o actualizar vehículo usando el HASH de la placa
     let vehiculo_id = null;
-    if (placa_detectada) {
+    if (placaHash) {
       const vehiculoRes = await client.query(
         `INSERT INTO vehiculo (placa, marca, modelo, color)
         VALUES ($1, $2, $3, $4)
-        ON CONFLICT (placa) DO UPDATE SET marca = EXCLUDED.marca, modelo = EXCLUDED.modelo, color = EXCLUDED.color
+        ON CONFLICT (placa) DO UPDATE SET color = EXCLUDED.color
         RETURNING vehiculo_id`,
-        [placa_detectada, marca || null, modelo || null, color || null]
+        [placaHash, marcaHash, modeloHash, color || null]
       );
       vehiculo_id = vehiculoRes.rows[0].vehiculo_id;
     }
 
-    // Insertar el reporte principal
+    // Insertar el reporte guardando la versión hasheada
     const queryReporte = `
       INSERT INTO reporte (
         ciudadano_id, municipio_id, tipo_infraccion_id, vehiculo_id,
@@ -79,12 +88,12 @@ router.post('/crear', async (req, res) => {
       longitud || null,
       direccion || '',
       descripcion || '',
-      placa_detectada || null
+      placaHash
     ]);
 
     const reporte_id = resReporte.rows[0].reporte_id;
 
-    // Registrar evidencia de la denuncia
+    // Registrar evidencia (URL de S3)
     if (url_evidencia) {
       await client.query(
         `INSERT INTO evidencia (reporte_id, tipo, url_archivo) VALUES ($1, 'foto', $2)`,
@@ -99,8 +108,8 @@ router.post('/crear', async (req, res) => {
 
   } catch (error) {
     await client.query('ROLLBACK');
-    console.error('Error al guardar reporte:', error);
-    res.status(500).json({ error: 'Error interno en el servidor' });
+    console.error('Error al guardar reporte con hashes:', error);
+    res.status(500).json({ error: 'Error interno del servidor' });
   } finally {
     client.release();
   }
