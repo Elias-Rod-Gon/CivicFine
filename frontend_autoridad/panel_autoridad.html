@@ -1,273 +1,240 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bandeja de Reportes Ciudadanos - CivicFine</title>
-    <link rel="stylesheet" href="panel_autoridad.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Panel de Autoridad - CivicFine</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="panel_autoridad.css">
 </head>
 <body>
 
-<!-- Barra superior para celulares -->
-<div class="mobile-header">
+  <header class="mobile-header">
     <button id="btn-toggle-menu" aria-label="Abrir menú">☰</button>
     <h2>CivicFine</h2>
-</div>
+  </header>
 
-<!-- Menú lateral -->
-<aside class="sidebar" id="sidebar">
+  <aside class="sidebar" id="sidebar">
     <div class="brand">
-        <h2>CivicFine</h2>
-        <span>Zapopan Movilidad</span>
+      <h2>CivicFine</h2>
+      <span>Panel Autoridad</span>
     </div>
     <nav class="menu">
-        <small>PANEL AUTORIDAD</small>
-        <a href="panel_autoridad.html" class="active">Reportes viales</a>
-        <a href="estadisticas.html">Estadísticas viales</a>
+      <small>GESTIÓN</small>
+      <a href="#" class="active">📋 Bandeja de Reportes</a>
+      <a href="estadisticas.html">📊 Estadísticas Viales</a>
     </nav>
-</aside>
+  </aside>
 
-<!-- Área de trabajo principal -->
-<main class="content">
-
-    <!-- Cabecera: municipio y operador -->
-    <header class="topbar">
-        <div class="location-info">
-            <span id="sector-actual">Comité de Monitoreo Urbano &gt; Zapopan</span>
+  <main class="content">
+    <div class="topbar">
+      <div class="location-info">
+        <span>📍 Municipio: Guadalajara, Jalisco</span>
+      </div>
+      <div class="user-profile">
+        <div>
+          <strong id="operador-nombre">Cargando...</strong><br>
+          <small id="operador-rol">Verificando turno...</small>
         </div>
-        <div class="user-profile">
-            <span>
-                <strong id="operador-nombre">Sin sesión</strong><br>
-                <small id="operador-rol">Operador / Admin</small>
-            </span>
-            <button id="btn-actualizar">Actualizar</button>
-        </div>
-    </header>
-
-    <!-- Indicadores -->
-    <section class="dashboard">
-        <h1>Bandeja de reportes ciudadanos</h1>
-        <p class="subtitle">Supervisión y dictamen de infracciones de tránsito en Zapopan</p>
-
-        <div class="kpi-grid">
-            <article class="card green">
-                <small>Reportes hoy</small>
-                <strong id="kpi-hoy">0</strong>
-                <span>Recibidos en el día</span>
-            </article>
-
-            <article class="card orange">
-                <small>Pendientes de revisión</small>
-                <strong id="kpi-pendientes">0</strong>
-                <span>Requieren atención</span>
-            </article>
-
-            <article class="card red">
-                <small>Multados esta semana</small>
-                <strong id="kpi-multados">0</strong>
-                <span id="kpi-umas">$0.00 acumulados</span>
-            </article>
-
-            <article class="card gray">
-                <small>Descartados esta semana</small>
-                <strong id="kpi-descartados">0</strong>
-                <span>Evidencia insuficiente</span>
-            </article>
-        </div>
-    </section>
-
-    <!-- Búsqueda y filtros -->
-    <section class="filters">
-        <div class="search-box">
-            <input type="text" id="input-search" placeholder="Buscar folio o placa...">
-            <button id="btn-clear">Limpiar</button>
-        </div>
-
-        <div class="filter-controls">
-            <label>
-                Estado del dictamen:
-                <select id="filter-status">
-                    <option value="todos">Todos</option>
-                    <option value="revision">En revisión</option>
-                    <option value="multado">Multado</option>
-                    <option value="descartado">Descartado</option>
-                </select>
-            </label>
-
-            <label>
-                Fecha desde:
-                <input type="date" id="filter-date">
-            </label>
-
-            <label>
-                Tipo de infracción:
-                <select id="filter-type">
-                    <option value="todos">Todas las infracciones</option>
-                </select>
-            </label>
-        </div>
-    </section>
-
-    <!-- Tabla de reportes con columna de miniatura -->
-    <section class="table-container">
-        <table>
-            <thead>
-                <tr>
-                    <th style="width: 50px;">Foto</th>
-                    <th>Folio</th>
-                    <th>Placa</th>
-                    <th>Tipo de infracción</th>
-                    <th>Fecha y hora</th>
-                    <th>Estado</th>
-                    <th>Operador</th>
-                    <th>Acción</th>
-                </tr>
-            </thead>
-            <tbody id="table-body"></tbody>
-        </table>
-    </section>
-
-</main>
-
-<!-- ======================================================================
-    MODAL DE EXPEDIENTE
-    ====================================================================== -->
-<div id="modal-expediente" class="modal-expediente" hidden>
-<div class="modal-contenido">
-    <header class="modal-header">
-    <div>
-        <h2 id="exp-titulo">Expediente</h2>
-        <p id="exp-subtitulo" class="subtitle">Cargando...</p>
-    </div>
-    <button type="button" id="btn-cerrar-expediente" class="btn-cerrar">Cerrar</button>
-    </header>
-
-    <div class="modal-body">
-    <div class="modal-tags">
-        <span class="tag dark" id="exp-estado">---</span>
-        <span class="tag neutral" id="exp-reclamo">Sin reclamar</span>
-        <span class="sync-status" id="exp-sync">● Cargando</span>
-    </div>
-
-    <!-- Evidencia fotográfica -->
-    <section class="panel">
-        <div class="evidence-viewer">
-        <div class="street-overlay" id="evidencia-calle">Ubicación: ---</div>
-        <img id="evidencia-img" alt="Evidencia fotográfica">
-        <div class="empty-evidence" id="evidencia-placeholder">Sin fotografía disponible</div>
-        <button type="button" id="btn-full-res" class="btn-overlay" disabled>Ver resolución completa</button>
-        </div>
-        <div class="evidence-meta">
-        <span id="evidencia-gps">GPS: ---</span>
-        <span id="evidencia-fecha">Fecha y hora: ---</span>
-        </div>
-    </section>
-
-    <!-- Vehículo e infracción -->
-    <section class="panel">
-        <div class="plate-box">
-        <span>JALISCO</span>
-        <strong id="vehiculo-placa">---</strong>
-        </div>
-        <div class="vehicle-specs">
-        <small>ANTECEDENTES DE LA PLACA</small>
-        <strong id="antecedentes-titulo">Historial de la placa ---</strong>
-        <p id="antecedentes-detalle">Sin antecedentes consultados</p>
-        </div>
-        <div class="infraction-box">
-        <small>INFRACCIÓN TIPIFICADA</small>
-        <p id="infraccion-descripcion">---</p>
-        </div>
-    </section>
-
-    <!-- Mapa -->
-    <section class="panel">
-        <div class="map-container">
-        <iframe id="mapa-iframe" class="mapa-iframe" style="display: none;" loading="lazy"
-                referrerpolicy="no-referrer-when-downgrade" title="Mapa del reporte"></iframe>
-        <div id="mapa-placeholder" class="map-placeholder">Sin coordenadas registradas</div>
-        <div class="map-footer-bar">
-            <div>
-            <strong id="mapa-direccion">---</strong>
-            <small id="mapa-coords">---</small>
-            </div>
-        </div>
-        </div>
-    </section>
-
-    <!-- Determinación de autoridad: Habilitado para Admin y Autoridad -->
-    <section class="panel">
-        <div class="panel-header">
-        <h2>Determinación de autoridad</h2>
-        </div>
-
-        <div class="reclamo-box" id="bloque-reclamo" style="display: none;">
-        <p id="reclamo-texto"></p>
-        <button type="button" id="btn-reclamar" class="btn-submit">Reclamar expediente</button>
-        </div>
-
-        <div id="bloque-dictamen">
-        <!-- TRES BOTONES DE DICTAMEN -->
-        <div class="decision-tabs-3" id="decision-tabs">
-            <button type="button" data-accion="multar" class="btn-action-tab active">Multar</button>
-            <button type="button" data-accion="unidad" class="btn-action-tab">Mandar Unidad</button>
-            <button type="button" data-accion="descartar" class="btn-action-tab">Desestimar</button>
-        </div>
-
-        <!-- Opción 1: Multar (UMAs) -->
-        <div id="bloque-umas">
-            <div class="uma-grid" id="uma-grid">
-            <button type="button" class="uma-card" data-umas="5">
-                <strong>5 UMA</strong>
-                <span class="monto"></span>
-                <small>Falta menor / parcial</small>
-            </button>
-            <button type="button" class="uma-card selected" data-umas="10">
-                <strong>10 UMA</strong>
-                <span class="monto"></span>
-                <small>Rampa bloqueada</small>
-            </button>
-            <button type="button" class="uma-card" data-umas="20">
-                <strong>20 UMA</strong>
-                <span class="monto"></span>
-                <small>Reincidencia / fuga</small>
-            </button>
-            </div>
-        </div>
-
-        <!-- Opción 2: Despachar Unidad -->
-        <div id="bloque-unidad" style="display: none;" class="info-dispatch-box">
-            <p>Se enviará una patrulla o grúa de tránsito al punto GPS indicado para inspección o remoción del vehículo.</p>
-        </div>
-
-        <div class="form-group" style="margin-top: 12px;">
-            <label for="notas-dictamen">Notas y fundamentación *</label>
-            <textarea id="notas-dictamen" rows="3" placeholder="Describa los hechos constatados en la evidencia..."></textarea>
-        </div>
-
-        <label class="checkbox-firma">
-            <input type="checkbox" id="check-firma">
-            <span>Certifico que los hechos constatados en la evidencia son verídicos y procedentes.</span>
-        </label>
-
-        <button type="button" id="btn-emitir-boleta" class="btn-submit">
-            Emitir Boleta de Infracción
+        <button onclick="localStorage.clear(); sessionStorage.clear(); window.location.href='/IniciaSesion.html';">
+          Salir
         </button>
-        </div>
-    </section>
-
-    <!-- Historial -->
-    <section class="panel">
-        <div class="panel-header">
-        <h2>Historial de seguimiento</h2>
-        <small id="historial-count">0 Registros</small>
-        </div>
-        <ul class="timeline" id="timeline-list"></ul>
-    </section>
+      </div>
     </div>
-</div>
-</div>
 
-<script src="panel_autoridad.js"></script>
+    <div class="dashboard">
+      <h1>Reportes Ciudadanos</h1>
+      <p class="subtitle">Analiza la evidencia y dictamina las infracciones viales.</p>
+
+      <div class="kpi-grid">
+        <div class="card">
+          <small>Reportes Hoy</small>
+          <strong id="kpi-hoy">--</strong>
+        </div>
+        <div class="card orange">
+          <small>Pendientes</small>
+          <strong id="kpi-pendientes">--</strong>
+        </div>
+        <div class="card green">
+          <small>Multados (Semana)</small>
+          <strong id="kpi-multados">--</strong>
+        </div>
+        <div class="card">
+          <small>Recaudación</small>
+          <strong id="kpi-umas" style="font-size: 1.2rem;">--</strong>
+        </div>
+        <div class="card red">
+          <small>Descartados</small>
+          <strong id="kpi-descartados">--</strong>
+        </div>
+      </div>
+    </div>
+
+    <div class="filters">
+      <div class="search-box">
+        <input type="text" id="input-search" placeholder="Buscar folio o placas...">
+        <button id="btn-clear">Limpiar</button>
+        <button id="btn-actualizar" style="background: #0284c7; color: white; border-color: #0284c7;">↻ Actualizar</button>
+      </div>
+
+      <div class="filter-controls">
+        <label>Estado
+          <select id="filter-status">
+            <option value="todos">Todos</option>
+            <option value="revision">Pendientes</option>
+            <option value="multado">Multados</option>
+            <option value="descartado">Descartados</option>
+          </select>
+        </label>
+        <label>Tipo
+          <select id="filter-type">
+            <option value="todos">Todas</option>
+          </select>
+        </label>
+        <label>Fecha (Desde)
+          <input type="date" id="filter-date">
+        </label>
+      </div>
+    </div>
+
+    <div class="table-container">
+      <table>
+        <thead>
+          <tr>
+            <th>Folio</th>
+            <th>Placas</th>
+            <th>Infracción</th>
+            <th>Fecha</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="table-body">
+          <tr><td colspan="6" style="text-align: center; padding: 20px;">Cargando reportes...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </main>
+
+  <div id="modal-dictamen" class="modal-expediente" hidden>
+    <div class="modal-contenido wide">
+      <header class="modal-header">
+        <div>
+          <h2>Expediente Ciudadano</h2>
+          <p class="subtitle" id="modal-folio">#REP-2026-000123</p>
+        </div>
+        <button class="btn-cerrar" id="btn-cerrar-modal">✕ Cerrar</button>
+      </header>
+
+      <div class="modal-body">
+        <div class="modal-grid">
+
+          <div class="evidencia-col">
+            <div class="evidencia-box" id="modal-foto-container">
+              <span id="modal-foto-texto">Sin imagen adjunta</span>
+            </div>
+
+            <div class="plate-box" style="width: 100%; box-sizing: border-box; text-align: center; margin-bottom: 12px;">
+              <span>PLACAS REPORTADAS</span>
+              <strong id="modal-placa">SIN PLACA</strong>
+            </div>
+
+            <div class="vehicle-specs">
+              <small>FALTA REPORTADA</small>
+              <p id="modal-tipo" style="font-weight: bold; margin-top: 5px;">--</p>
+            </div>
+
+            <div class="vehicle-specs">
+              <small>DESCRIPCIÓN DEL CIUDADANO</small>
+              <p id="modal-descripcion" style="margin-top: 5px; font-size: 0.9rem; font-style: italic;">"Sin descripción"</p>
+            </div>
+
+            <div class="vehicle-specs">
+              <small>UBICACIÓN</small>
+              <p id="modal-direccion" style="margin-top: 5px;">--</p>
+            </div>
+          </div>
+
+          <div class="acciones-col">
+            <div class="decision-tabs-3">
+              <button class="btn-action-tab" data-accion="multar">💰 Multar</button>
+              <button class="btn-action-tab" data-accion="unidad">🚛 Enviar unidad</button>
+              <button class="btn-action-tab" data-accion="descartar">✖ Desestimar</button>
+            </div>
+
+            <!-- Panel: MULTAR (Ahora en UMAs) -->
+            <div id="panel-multar" hidden>
+              <div class="custom-amount-box">
+                <label>Monto de la multa (UMAs)</label>
+                <input type="number" id="monto-umas" placeholder="Ej. 2.5" step="0.1" min="0.1">
+                <small id="monto-mxn-preview" style="display:block; margin-top:5px; color:#166534; font-weight:bold;">Equivalente: $0.00 MXN</small>
+              </div>
+              <div class="form-group">
+                <label>Notas para el expediente (opcional)</label>
+                <textarea id="notas-multa" rows="3" placeholder="Fundamento legal, observaciones..."></textarea>
+              </div>
+            </div>
+
+            <div id="panel-unidad" hidden>
+              <div class="info-dispatch-box">
+                ⚠️ Se enviará una unidad al lugar para verificar in situ.
+              </div>
+              <div class="form-group">
+                <label>Tipo de unidad</label>
+                <select id="tipo-unidad">
+                  <option value="patrulla">Patrulla</option>
+                  <option value="grua">Grúa</option>
+                  <option value="ambas">Ambas</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Prioridad</label>
+                <select id="prioridad-unidad">
+                  <option value="baja">Baja</option>
+                  <option value="media" selected>Media</option>
+                  <option value="alta">Alta</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>ETA estimado (minutos)</label>
+                <input type="number" id="eta-unidad" value="15" min="1" max="120" style="padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px;">
+              </div>
+            </div>
+
+            <div id="panel-descartar" hidden>
+              <div class="form-group">
+                <label>Motivo (obligatorio)</label>
+                <select id="motivo-descarte" style="padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px;">
+                  <option value="">Selecciona un motivo</option>
+                  <option value="foto_no_clara">Foto no clara</option>
+                  <option value="placas_no_visibles">Placas no visibles</option>
+                  <option value="falta_no_corresponde">La falta no corresponde</option>
+                  <option value="ya_atendido">Ya fue atendido</option>
+                  <option value="duplicado">Reporte duplicado</option>
+                  <option value="otro">Otro</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Detalle adicional (opcional)</label>
+                <textarea id="detalle-descarte" rows="3"></textarea>
+              </div>
+            </div>
+
+            <label class="checkbox-firma" style="margin-top: 20px;">
+              <input type="checkbox" id="firma-dictamen">
+              <span>Confirmo que verifiqué visualmente la evidencia y procede el dictamen.</span>
+            </label>
+
+            <button class="btn-submit" id="btn-confirmar-dictamen" disabled>
+              Confirmar acción
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="panel_autoridad.js"></script>
 </body>
 </html>
