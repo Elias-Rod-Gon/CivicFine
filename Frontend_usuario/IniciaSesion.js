@@ -86,7 +86,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
           // Pequeña pausa para asegurar la persistencia en memoria del navegador antes de redirigir
           setTimeout(() => {
-            window.location.replace('main_screen_user.html');
+            window.location.replace(
+            ['admin', 'autoridad'].includes(data.usuario.rol)
+            ? '/autoridad/panel_autoridad.html'
+            : 'main_screen_user.html'
+);
           }, 100);
         } else {
           alert(`Error: ${data.error || 'Credenciales inválidas'}`);
