@@ -1,4 +1,4 @@
-/* ==========================================================================
+\/* ==========================================================================
    ESTILOS MAIN SCREEN USER
    ========================================================================== */
 * {
@@ -30,12 +30,40 @@ body {
   color: #38bdf8;
 }
 
-.user-badge {
-  font-size: 0.75rem;
+.header-acciones {
+  display: flex;
+  align-items: center;
+}
+
+.btn-perfil {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   background: #334155;
-  padding: 4px 8px;
-  border-radius: 4px;
-  color: #cbd5e1;
+  padding: 4px 10px 4px 6px;
+  border-radius: 999px;
+  color: #e2e8f0;
+  text-decoration: none;
+  font-size: 0.75rem;
+}
+
+.btn-perfil:active {
+  opacity: 0.8;
+}
+
+.icono-perfil {
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #0284c7;
+  border-radius: 50%;
+  font-size: 0.7rem;
+}
+
+.user-badge {
+  font-weight: 600;
 }
 
 .app-container {
