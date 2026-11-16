@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CivicFine - Mis Denuncias</title>
+  <link rel="stylesheet" href="main_screen_user.css">
+  <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+</head>
+<body>
+
+  <!-- Encabezado Móvil -->
+  <div class="mobile-header">
+    <h2>CivicFine</h2>
+    <span class="user-badge" id="header-user-name">...</span>
+  </div>
+
+  <div class="app-container">
+
+    <header class="topbar">
+      <div class="user-profile-info">
+        <span class="sector-label" id="user-sector">📍 Municipio no asignado</span>
+        <h1 id="user-display-name">Bienvenido/a</h1>
+      </div>
+      <button type="button" class="btn-logout" id="btn-cerrar-sesion">Cerrar sesión</button>
+    </header>
+
+    <main class="content">
+
+      <!-- Controles de pestañas con CSS puro usando Radios -->
+      <form id="dashboard-controls" class="dashboard-form">
+        <input type="radio" name="filter-tab" id="tab-todos" class="tab-radio" checked>
+        <input type="radio" name="filter-tab" id="tab-revision" class="tab-radio">
+        <input type="radio" name="filter-tab" id="tab-resueltos" class="tab-radio">
+
+        <!-- Métricas KPI inicializadas en cero -->
+        <section class="kpi-grid">
+          <article class="kpi-card orange">
+            <small>PENDIENTES / EN REVISIÓN</small>
+            <strong id="kpi-pendientes">0</strong>
+            <span>En proceso por la autoridad</span>
+          </article>
+
+          <article class="kpi-card green">
+            <small>REPORTES VALIDADOS</small>
+            <strong id="kpi-validados">0</strong>
+            <span>Boletas de infracción emitidas</span>
+          </article>
+        </section>
+
+        <!-- Navegación por Filtros -->
+        <nav class="filter-nav" aria-label="Filtro de reportes">
+          <label for="tab-todos" class="filter-btn" id="lbl-todos">Todos (0)</label>
+          <label for="tab-revision" class="filter-btn" id="lbl-revision">En revisión (0)</label>
+          <label for="tab-resueltos" class="filter-btn" id="lbl-resueltos">Resueltos (0)</label>
+        </nav>
+
+        <!-- Listado Dinámico de Reportes -->
+        <section class="reports-section">
+          <div id="container-reportes" class="reports-list">
+            <!-- Inyectado por JS o estado vacío -->
+          </div>
+        </section>
+      </form>
+
+    </main>
+
+    <!-- Botón flotante para nueva denuncia -->
+    <a href="formulario.html" class="fab-new-report" aria-label="Registrar nueva denuncia">➕</a>
+
+  </div>
+
+  <script src="main_screen_user.js"></script>
+</body>
+</html>

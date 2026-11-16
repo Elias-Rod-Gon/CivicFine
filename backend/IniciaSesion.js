@@ -1,64 +1,127 @@
 const express = require('express');
 const router = express.Router();
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
 const { pool } = require('./db');
 
-// POST /api/auth/login
-router.post('/login', async (req, res) => {
-  const { telefono, correo, contrasena } = req.body;
+const SECRET_KEY = process.env.JWT_SECRET;
+if (!SECRET_KEY) {
+  throw new Error('Falta la variable de entorno JWT_SECRET');
+}
 
-  if (!telefono && !correo) {
-    return res.status(400).json({ error: 'Debes proporcionar un teléfono o correo electrónico' });
-  }
+// Convierte una fila de la tabla usuario al objeto que consume el frontend
+function formatearUsuario(fila) {
+  const { contrasena, ...resto } = fila;
+  return {
+    ...resto,
+    id: fila.usuario_id,
+    municipio_nombre: 'Zapopan Centro'
+  };
+}
 
+function firmarToken(usuario) {
+  return jwt.sign(
+    {
+      id: usuario.usuario_id,
+      telefono: String(usuario.telefono),
+      rol: String(usuario.rol || 'ciudadano')
+    },
+    SECRET_KEY,
+    { expiresIn: '7d' }
+  );
+}
+
+// 1. Verificar si el teléfono ya existe en la BD
+router.get('/verificar-telefono/:telefono', async (req, res) => {
   try {
+    const { telefono } = req.params;
+    const check = await pool.query(
+      'SELECT 1 FROM usuario WHERE telefono = $1 LIMIT 1',
+      [telefono]
+    );
+    res.json({ existe: check.rows.length > 0 });
+  } catch (err) {
+    console.error('Error al verificar teléfono:', err);
+    res.status(500).json({ error: 'Error al consultar la base de datos.' });
+  }
+});
+
+// 2. Registro de usuario nuevo
+router.post('/registro', async (req, res) => {
+  try {
+    const { nombre, correo, telefono, contrasena, municipio_id } = req.body;
+
+    if (!nombre || !correo || !telefono || !contrasena) {
+      return res.status(400).json({ error: 'Faltan campos obligatorios.' });
+    }
+
+    const checkUser = await pool.query(
+      'SELECT 1 FROM usuario WHERE telefono = $1 OR correo = $2 LIMIT 1',
+      [telefono, correo]
+    );
+    if (checkUser.rows.length > 0) {
+      return res.status(400).json({ error: 'El teléfono o correo ya está registrado.' });
+    }
+
+    const hash = await bcrypt.hash(contrasena, 10);
+
+    const insertRes = await pool.query(
+      `INSERT INTO usuario (nombre, correo, telefono, contrasena, rol, municipio_id, activo)
+      VALUES ($1, $2, $3, $4, 'ciudadano', $5, true)
+       RETURNING *`,
+      [nombre, correo, telefono, hash, municipio_id || 1]
+    );
+
+    const nuevoUsuario = insertRes.rows[0];
+    const usuario = formatearUsuario(nuevoUsuario);
+    const token = firmarToken(nuevoUsuario);
+
+    res.status(201).json({
+      mensaje: 'Usuario registrado correctamente',
+      token,
+      usuario
+    });
+  } catch (err) {
+    console.error('Error en /api/auth/registro:', err);
+    res.status(500).json({ error: 'No se pudo completar el registro.' });
+  }
+});
+
+// 3. Inicio de sesión
+router.post('/login', async (req, res) => {
+  try {
+    const { telefono, contrasena } = req.body;
+
+    if (!telefono || !contrasena) {
+      return res.status(400).json({ error: 'Ingresa teléfono y contraseña.' });
+    }
+
     const result = await pool.query(
-      `SELECT u.usuario_id, u.nombre, u.correo, u.telefono, u.contrasena, u.rol, u.municipio_id, u.activo,
-              a.numero_empleado, a.cargo, a.turno
-      FROM usuario u
-      LEFT JOIN autoridad a ON u.usuario_id = a.usuario_id
-      WHERE u.telefono = $1 OR u.correo = $2`,
-      [telefono || '', correo || '']
+      'SELECT * FROM usuario WHERE telefono = $1 AND activo = true',
+      [telefono]
     );
 
+    // Mismo mensaje para usuario inexistente y contraseña incorrecta
     if (result.rows.length === 0) {
-      return res.status(404).json({ error: 'Usuario no registrado' });
+      return res.status(401).json({ error: 'Teléfono o contraseña incorrectos.' });
     }
 
-    const usuario = result.rows[0];
+    const fila = result.rows[0];
+    const coincide = await bcrypt.compare(contrasena, fila.contrasena);
 
-    if (!usuario.activo) {
-      return res.status(403).json({ error: 'La cuenta se encuentra inactiva' });
+    if (!coincide) {
+      return res.status(401).json({ error: 'Teléfono o contraseña incorrectos.' });
     }
 
-    if (contrasena && usuario.contrasena !== contrasena) {
-      return res.status(401).json({ error: 'Contraseña incorrecta' });
-    }
-
-    await pool.query(
-      `INSERT INTO sesion (usuario_id) VALUES ($1)`,
-      [usuario.usuario_id]
-    );
+    const token = firmarToken(fila);
 
     res.json({
-      mensaje: 'Autenticación exitosa',
-      usuario: {
-        id: usuario.usuario_id,
-        nombre: usuario.nombre,
-        correo: usuario.correo,
-        telefono: usuario.telefono,
-        rol: usuario.rol,
-        municipio_id: usuario.municipio_id,
-        datos_autoridad: usuario.rol === 'autoridad' ? {
-          numero_empleado: usuario.numero_empleado,
-          cargo: usuario.cargo,
-          turno: usuario.turno
-        } : null
-      }
+      token,
+      usuario: formatearUsuario(fila)
     });
-
-  } catch (error) {
-    console.error('Error al iniciar sesión:', error);
-    res.status(500).json({ error: 'Error interno en el servidor al autenticar' });
+  } catch (err) {
+    console.error('Error en /api/auth/login:', err);
+    res.status(500).json({ error: 'No se pudo iniciar sesión.' });
   }
 });
 

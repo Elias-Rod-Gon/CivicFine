@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CivicFine - Acceso y Registro</title>
+  <link rel="stylesheet" href="IniciaSesion.css">
+  <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+</head>
+<body>
+
+  <!-- Header Móvil Institucional -->
+  <header class="mobile-header">
+    <h2>CivicFine</h2>
+  </header>
+
+  <div class="auth-wrapper">
+    <main class="auth-card">
+
+      <header class="auth-header">
+        <div class="brand-badge">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2L3 7v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-5.45 9-12V7l-9-5z"/>
+            <path d="M12 8v4M12 16h.01"/>
+          </svg>
+        </div>
+        <h1>CivicFine</h1>
+        <span class="subtitle">Plataforma Ciudadana de Movilidad</span>
+      </header>
+
+      <!-- Control de Pestañas con Radios CSS (Sin recarga) -->
+      <input type="radio" name="auth-mode" id="mode-login" class="mode-radio" checked>
+      <input type="radio" name="auth-mode" id="mode-register" class="mode-radio">
+
+      <nav class="auth-tabs">
+        <label for="mode-login" class="tab-btn">Iniciar Sesión</label>
+        <label for="mode-register" class="tab-btn">Crear Cuenta</label>
+      </nav>
+
+      <!-- ===================================================================
+           1. FORMULARIO DE INICIO DE SESIÓN
+      ==================================================================== -->
+      <form id="form-login" class="auth-form form-login-view" novalidate>
+
+        <div class="form-group">
+          <label for="login-telefono">Número Telefónico (10 dígitos) *</label>
+          <div class="input-prefix-group">
+            <span class="prefix">🇲🇽 +52</span>
+            <input
+              type="tel"
+              id="login-telefono"
+              placeholder="3331234567"
+              maxlength="10"
+              pattern="[0-9]{10}"
+              required
+              autocomplete="tel-national"
+            >
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="login-contrasena">Contraseña *</label>
+          <input
+            type="password"
+            id="login-contrasena"
+            placeholder="••••••••••••"
+            required
+            autocomplete="current-password"
+          >
+        </div>
+
+        <button type="submit" class="btn-submit" id="btn-login-submit">
+          Iniciar Sesión
+        </button>
+
+      </form>
+
+      <!-- ===================================================================
+           2. FORMULARIO DE REGISTRO DE CUENTA NUEVA
+      ==================================================================== -->
+      <form id="form-registro" class="auth-form form-register-view" novalidate>
+
+        <div class="form-group">
+          <label for="reg-nombre">Nombre(s) *</label>
+          <input type="text" id="reg-nombre" placeholder="Juan" required autocomplete="given-name">
+        </div>
+
+        <div class="form-group">
+          <label for="reg-apellidos">Apellidos *</label>
+          <input type="text" id="reg-apellidos" placeholder="Pérez Pereira" required autocomplete="family-name">
+        </div>
+
+        <div class="form-group">
+          <label for="reg-correo">Correo Electrónico *</label>
+          <input type="email" id="reg-correo" placeholder="juan.perez@ejemplo.com" required autocomplete="email">
+        </div>
+
+        <div class="form-group">
+          <label for="reg-telefono">Número Telefónico (10 dígitos) *</label>
+          <div class="input-prefix-group">
+            <span class="prefix">🇲🇽 +52</span>
+            <input
+              type="tel"
+              id="reg-telefono"
+              placeholder="3331234567"
+              maxlength="10"
+              pattern="[0-9]{10}"
+              required
+              autocomplete="tel-national"
+            >
+          </div>
+          <small class="field-hint" id="hint-telefono-check">Se verificará disponibilidad en la base de datos.</small>
+        </div>
+
+        <div class="form-group">
+          <label for="reg-contrasena">Contraseña *</label>
+          <input type="password" id="reg-contrasena" placeholder="Mínimo 6 caracteres" required minlength="6">
+        </div>
+
+        <button type="submit" class="btn-submit btn-register" id="btn-register-submit">
+          Registrarme e Iniciar
+        </button>
+
+      </form>
+
+      <!-- Botón secundario para autoridad -->
+      <div class="divider">
+        <span>o</span>
+      </div>
+
+      <a href="/autoridad/IniciaSesion.html" class="btn-authority">
+        🛡️ Soy policía o autoridad vial
+      </a>
+
+      <footer class="auth-footer">
+        <small>Plataforma para la movilidad segura en Zapopan.</small>
+      </footer>
+
+    </main>
+  </div>
+
+  <script src="IniciaSesion.js"></script>
+</body>
+</html>

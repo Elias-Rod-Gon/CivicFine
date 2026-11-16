@@ -1,38 +1,16 @@
-const crypto = require('crypto');
+// migrar_contrasenas.js
+require('dotenv').config();
+const bcrypt = require('bcrypt');
 const { pool } = require('./db');
 
-function generarHash(dato) {
-  return crypto.createHash('sha256').update(dato.trim().toUpperCase()).digest('hex');
-}
-
-async function probarHashing() {
-  console.log('--- TEST: Hashing SHA-256 en formulario.js ---');
-
-  try {
-    const placaOriginal = 'JAL-987-B';
-    const placaHash = generarHash(placaOriginal);
-
-    console.log(`📌 Placa Original: "${placaOriginal}"`);
-    console.log(`🔒 SHA-256 Hash (${placaHash.length} chars): ${placaHash}`);
-
-    // Insertar vehículo hasheado
-    const vehRes = await pool.query(
-      `INSERT INTO vehiculo (placa, marca, modelo, color)
-      VALUES ($1, $2, $3, 'Negro')
-      ON CONFLICT (placa) DO UPDATE SET color = EXCLUDED.color
-      RETURNING vehiculo_id, placa;`,
-      [placaHash, generarHash('Nissan'), generarHash('Versa')]
-    );
-
-    console.log('✅ Vehículo insertado con Hash exitosamente!');
-    console.log('🆔 ID Vehículo:', vehRes.rows[0].vehiculo_id);
-    console.log('🔑 Hash almacenado en PostgreSQL:', vehRes.rows[0].placa);
-
-  } catch (err) {
-    console.error('❌ Error en test de Hashing:', err.message);
-  } finally {
-    await pool.end();
+(async () => {
+  const { rows } = await pool.query(
+    "SELECT usuario_id, contrasena FROM usuario WHERE contrasena NOT LIKE '$2b$%'"
+  );
+  for (const u of rows) {
+    const hash = await bcrypt.hash(u.contrasena, 10);
+    await pool.query('UPDATE usuario SET contrasena = $1 WHERE usuario_id = $2', [hash, u.usuario_id]);
   }
-}
-
-probarHashing();
+  console.log(`Migradas ${rows.length} contraseñas.`);
+  process.exit(0);
+})();
