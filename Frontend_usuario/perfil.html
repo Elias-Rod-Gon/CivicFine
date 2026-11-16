@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CivicFine - Mi Perfil</title>
+  <link rel="stylesheet" href="perfil.css">
+  <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+</head>
+<body>
+
+  <div class="mobile-header">
+    <a href="main_screen_user.html" class="btn-back">← Volver</a>
+    <h2>Mi Perfil</h2>
+    <span></span>
+  </div>
+
+  <main class="content">
+
+    <!-- Datos personales -->
+    <section class="card">
+      <h3>Datos personales</h3>
+      <form id="form-perfil" novalidate>
+        <div class="form-group">
+          <label for="perfil-nombre">Nombre completo</label>
+          <input type="text" id="perfil-nombre" maxlength="100" required>
+        </div>
+
+        <div class="form-group">
+          <label for="perfil-correo">Correo electrónico</label>
+          <input type="email" id="perfil-correo" maxlength="150" required>
+        </div>
+
+        <div class="form-group">
+          <label for="perfil-municipio">Municipio</label>
+          <select id="perfil-municipio"></select>
+        </div>
+
+        <div class="form-group">
+          <label for="perfil-telefono">Teléfono (no editable)</label>
+          <input type="text" id="perfil-telefono" disabled>
+        </div>
+
+        <button type="submit" class="btn-primary" id="btn-guardar-perfil">Guardar cambios</button>
+        <p class="mensaje" id="msg-perfil" hidden></p>
+      </form>
+    </section>
+
+    <!-- Cambiar contraseña -->
+    <section class="card">
+      <h3>Cambiar contraseña</h3>
+      <form id="form-contrasena" novalidate>
+        <div class="form-group">
+          <label for="pass-actual">Contraseña actual</label>
+          <input type="password" id="pass-actual" required>
+        </div>
+
+        <div class="form-group">
+          <label for="pass-nueva">Nueva contraseña (mínimo 8 caracteres)</label>
+          <input type="password" id="pass-nueva" minlength="8" required>
+        </div>
+
+        <div class="form-group">
+          <label for="pass-confirmar">Confirmar nueva contraseña</label>
+          <input type="password" id="pass-confirmar" minlength="8" required>
+        </div>
+
+        <button type="submit" class="btn-primary">Actualizar contraseña</button>
+        <p class="mensaje" id="msg-contrasena" hidden></p>
+      </form>
+    </section>
+
+    <!-- Zona de peligro -->
+    <section class="card card-peligro">
+      <h3>Desactivar cuenta</h3>
+      <p class="hint">Tu cuenta dejará de poder iniciar sesión. Tus reportes se conservan.</p>
+      <button type="button" class="btn-danger" id="btn-desactivar">Desactivar cuenta</button>
+    </section>
+
+  </main>
+
+  <script src="perfil.js"></script>
+</body>
+</html>

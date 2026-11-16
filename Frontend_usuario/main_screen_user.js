@@ -2,7 +2,6 @@
 // CIVICFINE - DASHBOARD CIUDADANO
 // ==========================================================================
 
-// Lee la sesión desde localStorage o sessionStorage, en un solo lugar
 function obtenerSesion() {
   const token = localStorage.getItem('civicfine_token') || sessionStorage.getItem('civicfine_token');
   const raw = localStorage.getItem('civicfine_user') || sessionStorage.getItem('civicfine_user');
@@ -18,7 +17,6 @@ function obtenerSesion() {
   return esValido ? { token, usuario } : null;
 }
 
-// Guardián: solo redirige si realmente no hay sesión
 const sesion = obtenerSesion();
 if (!sesion) {
   console.warn('Acceso denegado: no hay sesión activa.');
@@ -26,11 +24,10 @@ if (!sesion) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  if (!sesion) return; // ya se redirigió arriba
+  if (!sesion) return;
 
   const { token, usuario } = sesion;
-  // Acepta distintos nombres de id que pueda devolver el login
-  const userId = usuario.id ?? usuario.id_usuario ?? usuario.idUsuario ?? usuario._id ?? null;
+  const userId = usuario.id ?? usuario.usuario_id ?? usuario.id_usuario ?? null;
 
   const el = {
     containerReportes: document.getElementById('container-reportes'),
@@ -46,6 +43,17 @@ document.addEventListener('DOMContentLoaded', () => {
     tabTodos: document.getElementById('tab-todos'),
     tabRevision: document.getElementById('tab-revision'),
     tabResueltos: document.getElementById('tab-resueltos'),
+    modal: document.getElementById('modal-detalle'),
+    btnCerrarDetalle: document.getElementById('btn-cerrar-detalle'),
+    detFoto: document.getElementById('det-foto'),
+    detFolio: document.getElementById('det-folio'),
+    detEstado: document.getElementById('det-estado'),
+    detInfraccion: document.getElementById('det-infraccion'),
+    detPlaca: document.getElementById('det-placa'),
+    detFecha: document.getElementById('det-fecha'),
+    detDireccion: document.getElementById('det-direccion'),
+    detMapa: document.getElementById('det-mapa'),
+    detDescripcion: document.getElementById('det-descripcion'),
   };
 
   let reportesTotales = [];
@@ -53,13 +61,14 @@ document.addEventListener('DOMContentLoaded', () => {
   cargarPerfil();
   configurarCierreSesion();
   configurarTabs();
+  configurarDetalle();
 
   if (userId) {
-    cargarReportes(userId);
+    cargarReportes();
   } else {
     console.warn('El usuario no tiene id; no se pueden cargar reportes.');
-    renderizarLista([]);
     actualizarMetricas([]);
+    renderizarLista([]);
   }
 
   function cargarPerfil() {
@@ -84,21 +93,31 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  async function cargarReportes(id) {
+  function configurarDetalle() {
+    if (!el.btnCerrarDetalle) return;
+    el.btnCerrarDetalle.addEventListener('click', cerrarDetalle);
+  }
+
+  function cerrarDetalle() {
+    el.modal.hidden = true;
+    el.detMapa.removeAttribute('src');
+    el.detFoto.removeAttribute('src');
+  }
+
+  async function cargarReportes() {
     if (el.containerReportes) {
       el.containerReportes.innerHTML = `
         <div class="empty-state"><p>Cargando información desde el servidor...</p></div>`;
     }
 
     try {
-      const res = await fetch(`/api/usuario/mis-reportes/${id}`, {
+      const res = await fetch('/api/usuario/mis-reportes', {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         }
       });
 
-      // Un 401 significa token inválido o vencido: ahí sí cerramos sesión
       if (res.status === 401) {
         localStorage.clear();
         sessionStorage.clear();
@@ -162,24 +181,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
       const estado = rep.estado || 'pendiente';
       const estadoText = estado.replace('_', ' ').toUpperCase();
+      const placaText = rep.placa_detectada || 'SIN PLACA';
+      const folio = `REP-2026-${String(rep.id).padStart(6, '0')}`;
 
-      const placaText = rep.placa_detectada
-        ? (rep.placa_detectada.length === 64 ? `${rep.placa_detectada.substring(0, 8)}...` : rep.placa_detectada)
-        : 'SIN PLACA';
+      const miniatura = rep.evidencia_url
+        ? `<img class="report-thumb" src="${rep.evidencia_url}" alt="Evidencia" loading="lazy"
+              onerror="this.replaceWith(Object.assign(document.createElement('div'),{className:'report-thumb-placeholder',textContent:'Sin Foto'}))">`
+        : `<div class="report-thumb-placeholder">Sin Foto</div>`;
 
       return `
-        <article class="report-card">
+        <article class="report-card clickable" data-id="${rep.id}">
           <div class="report-header">
-            <span class="report-folio">${rep.folio || 'FOLIO-000'}</span>
+            <span class="report-folio">${folio}</span>
             <span class="badge-status badge-${estado}">${estadoText}</span>
           </div>
           <div class="report-body">
-            <img
-              src="${rep.evidencia_url || 'https://via.placeholder.com/64?text=Sin+Foto'}"
-              alt="Evidencia"
-              class="report-thumb"
-              onerror="this.src='https://via.placeholder.com/64?text=Sin+Foto';"
-            >
+            ${miniatura}
             <div class="report-info">
               <strong>${rep.tipo_infraccion || 'Infracción Vial'}</strong>
               <span>📍 ${rep.direccion || 'Ubicación no especificada'}</span>
@@ -188,5 +205,55 @@ document.addEventListener('DOMContentLoaded', () => {
           </div>
         </article>`;
     }).join('');
+
+    el.containerReportes.querySelectorAll('.report-card.clickable').forEach(card => {
+      card.addEventListener('click', () => abrirDetalle(card.dataset.id));
+    });
+  }
+
+  async function abrirDetalle(reporteId) {
+    try {
+      const res = await fetch(`/api/usuario/reportes/${reporteId}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const { reporte: r } = await res.json();
+
+      const fecha = new Date(r.fecha_hora).toLocaleString('es-MX', {
+        day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
+      });
+
+      if (r.evidencia_url) {
+        el.detFoto.src = r.evidencia_url;
+        el.detFoto.style.display = 'block';
+      } else {
+        el.detFoto.removeAttribute('src');
+        el.detFoto.style.display = 'none';
+      }
+
+      el.detFolio.textContent = `REP-2026-${String(r.reporte_id).padStart(6, '0')}`;
+      el.detEstado.textContent = r.estado.replace('_', ' ').toUpperCase();
+      el.detEstado.className = `badge-status badge-${r.estado}`;
+      el.detInfraccion.textContent = r.tipo_infraccion;
+      el.detPlaca.textContent = r.placa_detectada || 'Sin placa';
+      el.detFecha.textContent = fecha;
+      el.detDireccion.textContent = r.direccion || 'Sin dirección';
+      el.detDescripcion.textContent = r.descripcion || 'Sin observaciones';
+
+      if (r.latitud && r.longitud) {
+        const lat = Number(r.latitud);
+        const lon = Number(r.longitud);
+        const d = 0.003;
+        el.detMapa.src =
+          `https://www.openstreetmap.org/export/embed.html?bbox=${lon - d},${lat - d},${lon + d},${lat + d}&layer=mapnik&marker=${lat},${lon}`;
+      } else {
+        el.detMapa.removeAttribute('src');
+      }
+
+      el.modal.hidden = false;
+    } catch (err) {
+      console.warn('No se pudo abrir el detalle:', err.message);
+      alert('No se pudo abrir el reporte.');
+    }
   }
 });

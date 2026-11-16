@@ -36,6 +36,9 @@ app.use((req, res, next) => {
   next();
 });
 
+const perfilRoutes = require('./perfil');
+app.use('/api/perfil', perfilRoutes);
+
 // --------------------------------------------------------------------------
 // Archivos Estáticos (Frontend)
 // --------------------------------------------------------------------------

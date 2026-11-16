@@ -27,13 +27,11 @@
 
     <main class="content">
 
-      <!-- Controles de pestañas con CSS puro usando Radios -->
       <form id="dashboard-controls" class="dashboard-form">
         <input type="radio" name="filter-tab" id="tab-todos" class="tab-radio" checked>
         <input type="radio" name="filter-tab" id="tab-revision" class="tab-radio">
         <input type="radio" name="filter-tab" id="tab-resueltos" class="tab-radio">
 
-        <!-- Métricas KPI inicializadas en cero -->
         <section class="kpi-grid">
           <article class="kpi-card orange">
             <small>PENDIENTES / EN REVISIÓN</small>
@@ -48,26 +46,63 @@
           </article>
         </section>
 
-        <!-- Navegación por Filtros -->
         <nav class="filter-nav" aria-label="Filtro de reportes">
           <label for="tab-todos" class="filter-btn" id="lbl-todos">Todos (0)</label>
           <label for="tab-revision" class="filter-btn" id="lbl-revision">En revisión (0)</label>
           <label for="tab-resueltos" class="filter-btn" id="lbl-resueltos">Resueltos (0)</label>
         </nav>
 
-        <!-- Listado Dinámico de Reportes -->
         <section class="reports-section">
-          <div id="container-reportes" class="reports-list">
-            <!-- Inyectado por JS o estado vacío -->
-          </div>
+          <div id="container-reportes" class="reports-list"></div>
         </section>
       </form>
 
     </main>
 
-    <!-- Botón flotante para nueva denuncia -->
     <a href="formulario.html" class="fab-new-report" aria-label="Registrar nueva denuncia">➕</a>
 
+  </div>
+
+  <!-- Vista de detalle del reporte -->
+  <div id="modal-detalle" class="modal-detalle" hidden>
+    <div class="modal-contenido">
+      <header class="modal-header">
+        <button type="button" id="btn-cerrar-detalle" class="btn-back-detalle">← Volver</button>
+        <h2>Detalle de Reporte</h2>
+      </header>
+
+      <div class="modal-body">
+        <div class="detalle-foto-wrap">
+          <img id="det-foto" class="detalle-foto" alt="Evidencia del reporte" style="display: none;">
+        </div>
+
+        <p class="detalle-folio" id="det-folio"></p>
+        <span class="badge-status" id="det-estado"></span>
+
+        <div class="detalle-card">
+          <small>Infracción</small>
+          <strong id="det-infraccion"></strong>
+        </div>
+
+        <div class="detalle-card">
+          <small>Placa detectada</small>
+          <strong id="det-placa"></strong>
+          <small>Fecha y hora</small>
+          <span id="det-fecha"></span>
+          <small>Ubicación</small>
+          <span id="det-direccion"></span>
+        </div>
+
+        <div class="detalle-mapa">
+          <iframe id="det-mapa" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+        </div>
+
+        <div class="detalle-card">
+          <small>Observaciones</small>
+          <span id="det-descripcion"></span>
+        </div>
+      </div>
+    </div>
   </div>
 
   <script src="main_screen_user.js"></script>
