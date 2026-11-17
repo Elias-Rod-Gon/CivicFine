@@ -433,7 +433,7 @@ router.post(
 );
 
 // ==========================================================================
-// 7. Enviar unidad: también reclama el reporte para quien la envía
+// 7. Enviar unidad
 // ==========================================================================
 router.post(
   '/reportes/:id/enviar-unidad',
@@ -481,7 +481,7 @@ router.post(
 );
 
 // ==========================================================================
-// 8. Dictaminar (CORREGIDO: Auto-asigna el reporte en lugar de bloquear con 409)
+// 8. Dictaminar
 // ==========================================================================
 router.post(
   '/reportes/:id/dictamen',
@@ -511,7 +511,7 @@ router.post(
           return { status: 409, body: { error: 'Este reporte ya fue dictaminado.' } };
         }
 
-        // Si el reporte está reclamado ACTIVAMENTE por OTRO operador distinto:
+        // Si está reclamado ACTIVAMENTE por OTRO operador distinto:
         if (reclamoVigente(r) && r.asignado_a !== req.usuario.id) {
           return {
             status: 409,
@@ -519,16 +519,29 @@ router.post(
           };
         }
 
-        // Emitir multa si aplica
+        // 1. Emitir o actualizar la multa si el dictamen es validado
         if (dictamen === 'validado') {
-          await cliente.query(
-            `INSERT INTO multa (reporte_id, autoridad_id, tipo_infraccion_id, monto, estado_pago)
-            VALUES ($1, $2, $3, $4, 'pendiente')`,
-            [reporteId, req.usuario.id, r.tipo_infraccion_id, montoNum]
+          const tipoInfraccionId = r.tipo_infraccion_id || 1;
+
+          // Intenta actualizar si ya existía un registro de multa previo
+          const updateRes = await cliente.query(
+            `UPDATE multa
+             SET autoridad_id = $2, tipo_infraccion_id = $3, monto = $4, estado_pago = 'pendiente'
+             WHERE reporte_id = $1`,
+            [reporteId, req.usuario.id, tipoInfraccionId, montoNum]
           );
+
+          // Si no existía registro anterior, la inserta
+          if (updateRes.rowCount === 0) {
+            await cliente.query(
+              `INSERT INTO multa (reporte_id, autoridad_id, tipo_infraccion_id, monto, estado_pago)
+               VALUES ($1, $2, $3, $4, 'pendiente')`,
+              [reporteId, req.usuario.id, tipoInfraccionId, montoNum]
+            );
+          }
         }
 
-        // Asignar y actualizar estado final del reporte
+        // 2. Actualizar estado y asignación del reporte
         await cliente.query(
           `UPDATE reporte
            SET estado = $2, asignado_a = $3, asignado_en = NOW()
@@ -536,6 +549,7 @@ router.post(
           [reporteId, dictamen, req.usuario.id]
         );
 
+        // 3. Registrar el historial de seguimiento
         await registrarSeguimiento(
           cliente,
           reporteId,
@@ -544,6 +558,7 @@ router.post(
           dictamen,
           comentario || (dictamen === 'validado' ? 'Multa emitida' : 'Reporte descartado')
         );
+
         return { status: 200, body: { mensaje: 'Dictamen registrado.' } };
       });
 
@@ -551,9 +566,13 @@ router.post(
         emitirCambio({ reporte_id: reporteId, accion: 'dictamen' });
       }
       res.status(resultado.status).json(resultado.body);
+
     } catch (err) {
       console.error('[PANEL] error en dictamen:', err);
-      res.status(500).json({ error: 'No se pudo registrar el dictamen.' });
+      res.status(500).json({
+        error: 'No se pudo registrar el dictamen.',
+        detalle: err.message || String(err)
+      });
     }
   }
 );
