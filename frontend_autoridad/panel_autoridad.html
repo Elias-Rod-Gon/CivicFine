@@ -17,7 +17,7 @@
     <h2>CivicFine - Autoridad</h2>
   </header>
 
-  <!-- BARRA LATERAL (SIDEBAR) -->
+  <!-- BARRA LATERAL -->
   <aside class="sidebar" id="sidebar">
     <div class="brand">
       <h2>CivicFine</h2>
@@ -25,7 +25,7 @@
     </div>
     <nav class="menu">
       <small>Gestión Operativa</small>
-      <a href="#" class="active">Bandeja de Reportes</a>
+      <a href="panel_autoridad.html" class="active">Bandeja de Reportes</a>
       <a href="estadisticas.html">Estadísticas Viales</a>
     </nav>
   </aside>
@@ -122,6 +122,7 @@
         <thead>
           <tr>
             <th>Folio</th>
+            <th>Foto</th>
             <th>Placas</th>
             <th>Infracción</th>
             <th>Fecha</th>
@@ -130,7 +131,7 @@
           </tr>
         </thead>
         <tbody id="table-body">
-          <tr><td colspan="6" class="table-loading">Cargando reportes...</td></tr>
+          <tr><td colspan="7" class="table-loading">Cargando reportes...</td></tr>
         </tbody>
       </table>
     </section>
@@ -168,7 +169,7 @@
 
             <div class="data-block">
               <small>DESCRIPCIÓN DEL CIUDADANO</small>
-              <p id="modal-descripcion" class="text-muted">"Sin descripción"</p>
+              <p id="modal-descripcion" class="text-muted">Sin descripción</p>
             </div>
 
             <div class="data-block">
@@ -186,7 +187,7 @@
               <button class="btn-action-tab" data-accion="descartar">Desestimar</button>
             </div>
 
-            <!-- Panel: MULTAR (Monto en UMAs) -->
+            <!-- Panel: MULTAR -->
             <div id="panel-multar" hidden>
               <div class="custom-amount-box">
                 <label for="monto-umas">Monto de la sanción (UMAs)</label>

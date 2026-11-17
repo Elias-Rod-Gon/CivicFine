@@ -826,3 +826,18 @@ tr:hover td {
     height: 56px;
   }
 }
+table {
+  min-width: 0;
+  table-layout: auto;
+}
+
+th:nth-child(2),
+td:nth-child(2) {
+  width: 72px;
+  text-align: center;
+}
+
+td:nth-child(2) img,
+td:nth-child(2) .table-thumb-empty {
+  margin: 0 auto;
+}
