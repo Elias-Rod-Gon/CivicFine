@@ -29,7 +29,7 @@ app.use((req, res, next) => {
   res.setHeader(
     'Content-Security-Policy',
     "default-src 'self'; " +
-    "script-src 'self' https://unpkg.com https://cdn.jsdelivr.net; " +
+    "script-src 'self' 'unsafe-inline' https://unpkg.com https://cdn.jsdelivr.net; " +
     "style-src 'self' 'unsafe-inline' https:; " +
     "img-src 'self' data: blob: https:; " +
     "frame-src https://www.openstreetmap.org; " +
@@ -75,8 +75,7 @@ app.get('/health', async (req, res) => {
     console.error('[health] error de base de datos:', {
       codigo: err && err.code,
       mensaje: err && err.message,
-      nombre: err && err.name,
-      detalle: err
+      nombre: err && err.name
     });
     res.status(503).json({ status: 'error', mensaje: 'Base de datos no disponible.' });
   }
