@@ -456,19 +456,6 @@ router.post(
           return { status: 409, body: { error: 'Otro operador ya tiene este reporte.' } };
         }
 
-        const { rows: mios } = await cliente.query(
-          `SELECT reporte_id, estado, asignado_a, asignado_en
-          FROM reporte
-          WHERE asignado_a = $1 AND reporte_id <> $2 AND estado = ANY($3::text[])`,
-          [req.usuario.id, reporteId, ESTADOS_ACTIVOS]
-        );
-        if (mios.some(reclamoVigente)) {
-          return {
-            status: 409,
-            body: { error: 'Ya tienes otro reporte reclamado. Libéralo o dictamínalo primero.' }
-          };
-        }
-
         await cliente.query(
           `UPDATE reporte
           SET asignado_a = $1, asignado_en = NOW(), estado = 'en_revision'
@@ -479,7 +466,7 @@ router.post(
         const texto = `Unidad enviada: ${tipo_unidad || 'patrulla'} · prioridad ${prioridad || 'media'} · ETA ${eta_minutos || 15} min${comentario ? ' — ' + comentario : ''}`;
         await registrarSeguimiento(cliente, reporteId, req.usuario.id, r.estado, 'en_revision', texto);
 
-        return { status: 200, body: { mensaje: 'Unidad enviada. Reporte reclamado para dictamen.' } };
+        return { status: 200, body: { mensaje: 'Unidad enviada. Reporte asignado para seguimiento.' } };
       });
 
       if (resultado.status === 200) {
@@ -494,7 +481,7 @@ router.post(
 );
 
 // ==========================================================================
-// 8. Dictaminar
+// 8. Dictaminar (CORREGIDO: Auto-asigna el reporte en lugar de bloquear con 409)
 // ==========================================================================
 router.post(
   '/reportes/:id/dictamen',
@@ -523,13 +510,16 @@ router.post(
         if (!ESTADOS_ACTIVOS.includes(r.estado)) {
           return { status: 409, body: { error: 'Este reporte ya fue dictaminado.' } };
         }
-        if (r.asignado_a !== req.usuario.id || !reclamoVigente(r)) {
+
+        // Si el reporte está reclamado ACTIVAMENTE por OTRO operador distinto:
+        if (reclamoVigente(r) && r.asignado_a !== req.usuario.id) {
           return {
             status: 409,
-            body: { error: 'Tienes que reclamar el reporte (y que el reclamo esté vigente) para dictaminarlo.' }
+            body: { error: 'Otro operador ya tiene este reporte en atención.' }
           };
         }
 
+        // Emitir multa si aplica
         if (dictamen === 'validado') {
           await cliente.query(
             `INSERT INTO multa (reporte_id, autoridad_id, tipo_infraccion_id, monto, estado_pago)
@@ -538,9 +528,12 @@ router.post(
           );
         }
 
+        // Asignar y actualizar estado final del reporte
         await cliente.query(
-          'UPDATE reporte SET estado = $2 WHERE reporte_id = $1',
-          [reporteId, dictamen]
+          `UPDATE reporte
+           SET estado = $2, asignado_a = $3, asignado_en = NOW()
+           WHERE reporte_id = $1`,
+          [reporteId, dictamen, req.usuario.id]
         );
 
         await registrarSeguimiento(
