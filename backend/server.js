@@ -3,92 +3,105 @@ const path = require('path');
 require('dotenv').config();
 
 const { pool } = require('./db');
-
-// Importar Routers del Backend (Módulos activos)
 const authRoutes = require('./IniciaSesion');
 const formularioRoutes = require('./formulario');
 const mainUserRoutes = require('./main_screen_user');
 const autoridadRoutes = require('./panel_autoridad');
+const perfilRoutes = require('./perfil');
+const estadisticasRoutes = require('./estadisticas');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+const IS_PROD = process.env.NODE_ENV === 'production';
 
-// Middleware para interpretación de JSON y Formularios (Límite 10MB para Base64/imágenes)
+const ORIGENES_PERMITIDOS = (process.env.ORIGENES_PERMITIDOS || '')
+  .split(',')
+  .map(o => o.trim())
+  .filter(Boolean);
+
+app.disable('x-powered-by');
+app.set('trust proxy', 1);
+
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
-// Middleware de Content-Security-Policy y CORS flexible (Local, Cloudflare y Railway)
 app.use((req, res, next) => {
   res.setHeader(
-    "Content-Security-Policy",
-    "default-src 'self' 'unsafe-inline' 'unsafe-eval' blob: data: https: http:; " +
-    "script-src 'self' 'unsafe-inline' 'unsafe-eval' https:; " +
+    'Content-Security-Policy',
+    "default-src 'self'; " +
+    "script-src 'self' https://unpkg.com https://cdn.jsdelivr.net; " +
     "style-src 'self' 'unsafe-inline' https:; " +
-    "img-src 'self' data: blob: https: http:; " +
-    "connect-src 'self' https: http: ws: wss:;"
+    "img-src 'self' data: blob: https:; " +
+    "frame-src https://www.openstreetmap.org; " +
+    "connect-src 'self' https:;"
   );
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
-  if (req.method === 'OPTIONS') {
-    return res.sendStatus(200);
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+
+  const origen = req.headers.origin;
+  if (origen && (ORIGENES_PERMITIDOS.includes(origen) || !IS_PROD)) {
+    res.setHeader('Access-Control-Allow-Origin', origen);
+    res.setHeader('Vary', 'Origin');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
   }
+
+  if (req.method === 'OPTIONS') return res.sendStatus(204);
   next();
 });
 
-const perfilRoutes = require('./perfil');
-app.use('/api/perfil', perfilRoutes);
-
-const estadisticasRoutes = require('./estadisticas');
-app.use('/api/estadisticas', estadisticasRoutes);
-// --------------------------------------------------------------------------
-// Archivos Estáticos (Frontend)
-// --------------------------------------------------------------------------
-// Frontend de Ciudadano (Raíz)
 app.use(express.static(path.join(__dirname, '../Frontend_usuario')));
-
-// Panel de Autoridad
 app.use('/autoridad', express.static(path.join(__dirname, '../frontend_autoridad')));
 
-// Redirección de la raíz / al login de usuario
-app.get('/', (req, res) => {
-  res.redirect('/IniciaSesion.html');
-});
+app.get('/', (req, res) => res.redirect('/IniciaSesion.html'));
 
-// --------------------------------------------------------------------------
-// Rutas API REST (Endpoints)
-// --------------------------------------------------------------------------
-app.use('/api/auth', authRoutes);           // Login y Autenticación
-app.use('/api/reportes', formularioRoutes); // Formulario, OCR y Reportes
-app.use('/api/usuario', mainUserRoutes);    // Historial y Perfil del Ciudadano
-app.use('/api/autoridad', autoridadRoutes); // Consola y Dictamen de la Autoridad
+app.use('/api/auth', authRoutes);
+app.use('/api/reportes', formularioRoutes);
+app.use('/api/usuario', mainUserRoutes);
+app.use('/api/autoridad', autoridadRoutes);
+app.use('/api/perfil', perfilRoutes);
+app.use('/api/estadisticas', estadisticasRoutes);
 
-// Endpoint de prueba de salud / Base de datos
 app.get('/health', async (req, res) => {
   try {
-    const dbRes = await pool.query('SELECT NOW()');
+    const { rows } = await pool.query('SELECT NOW() AS ahora');
     res.json({
       status: 'ok',
-      environment: process.env.NODE_ENV || 'development',
-      serverTime: new Date(),
-      dbTime: dbRes.rows[0].now
+      entorno: process.env.NODE_ENV || 'development',
+      hora_servidor: new Date(),
+      hora_base: rows[0].ahora
     });
   } catch (err) {
-    res.status(500).json({ status: 'error', message: err.message });
+    console.error('[health] error de base de datos:', err.message);
+    res.status(503).json({ status: 'error', mensaje: 'Base de datos no disponible.' });
   }
 });
 
-// Manejo de rutas inexistentes (404)
 app.use((req, res) => {
-  res.status(404).send('Ruta no encontrada en el servidor CivicFine.');
+  if (req.path.startsWith('/api/')) {
+    return res.status(404).json({ error: 'Ruta no encontrada.' });
+  }
+  res.status(404).send('Ruta no encontrada.');
 });
 
-// Iniciar servidor Express
-app.listen(PORT, () => {
-  console.log('====================================================');
-  console.log(`🚀 Servidor CivicFine iniciado correctamente`);
-  console.log(`📡 Puerto:          ${PORT}`);
-  console.log(`📱 Vista Ciudadano: http://localhost:${PORT}/IniciaSesion.html`);
-  console.log(`🛡️ Vista Autoridad: http://localhost:${PORT}/autoridad/panel_autoridad.html`);
-  console.log('====================================================');
+app.use((err, req, res, next) => {
+  console.error('[servidor] error no controlado:', err);
+  if (res.headersSent) return next(err);
+  res.status(500).json({ error: 'Error interno del servidor.' });
 });
+
+const servidor = app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Servidor CivicFine en puerto ${PORT} (entorno: ${process.env.NODE_ENV || 'development'})`);
+});
+
+function cerrar(senal) {
+  console.log(`${senal} recibido, cerrando servidor.`);
+  servidor.close(async () => {
+    await pool.end().catch(() => {});
+    process.exit(0);
+  });
+  setTimeout(() => process.exit(1), 10000).unref();
+}
+
+process.on('SIGTERM', () => cerrar('SIGTERM'));
+process.on('SIGINT', () => cerrar('SIGINT'));
