@@ -481,7 +481,7 @@ router.post(
 );
 
 // ==========================================================================
-// 8. Dictaminar
+// 8. Dictaminar (Maneja actualización/inserción de multas y secuencias SQL)
 // ==========================================================================
 router.post(
   '/reportes/:id/dictamen',
@@ -523,19 +523,17 @@ router.post(
         if (dictamen === 'validado') {
           const tipoInfraccionId = r.tipo_infraccion_id || 1;
 
-          // Intenta actualizar si ya existía un registro de multa previo
           const updateRes = await cliente.query(
             `UPDATE multa
-             SET autoridad_id = $2, tipo_infraccion_id = $3, monto = $4, estado_pago = 'pendiente'
+             SET autoridad_id = $2, tipo_infraccion_id = $3, monto = $4, estado_pago = 'pendiente', fecha_emision = NOW()
              WHERE reporte_id = $1`,
             [reporteId, req.usuario.id, tipoInfraccionId, montoNum]
           );
 
-          // Si no existía registro anterior, la inserta
           if (updateRes.rowCount === 0) {
             await cliente.query(
-              `INSERT INTO multa (reporte_id, autoridad_id, tipo_infraccion_id, monto, estado_pago)
-               VALUES ($1, $2, $3, $4, 'pendiente')`,
+              `INSERT INTO multa (reporte_id, autoridad_id, tipo_infraccion_id, monto, estado_pago, fecha_emision)
+               VALUES ($1, $2, $3, $4, 'pendiente', NOW())`,
               [reporteId, req.usuario.id, tipoInfraccionId, montoNum]
             );
           }
