@@ -3,79 +3,127 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CivicFine - Mi Perfil</title>
+  <title>CivicFine - Datos del Ciudadano</title>
   <link rel="stylesheet" href="perfil.css">
   <link rel="icon" href="data:;base64,iVBORw0KGgo=">
 </head>
 <body>
 
-  <div class="mobile-header">
-    <a href="main_screen_user.html" class="btn-back">← Volver</a>
-    <h2>Mi Perfil</h2>
-    <span></span>
-  </div>
+  <!-- ENCABEZADO INSTITUCIONAL -->
+  <header class="site-header">
+    <div class="header-brand">
+      <h1>CivicFine</h1>
+      <span>Portal Ciudadano</span>
+    </div>
+    <nav class="header-nav">
+      <a href="main_screen_user.html" class="btn-text">← Volver al panel principal</a>
+    </nav>
+  </header>
 
-  <main class="content">
+  <main class="main-layout">
 
-    <!-- Datos personales -->
-    <section class="card">
-      <h3>Datos personales</h3>
-      <form id="form-perfil" novalidate>
-        <div class="form-group">
-          <label for="perfil-nombre">Nombre completo</label>
-          <input type="text" id="perfil-nombre" maxlength="100" required>
-        </div>
-
-        <div class="form-group">
-          <label for="perfil-correo">Correo electrónico</label>
-          <input type="email" id="perfil-correo" maxlength="150" required>
-        </div>
-
-        <div class="form-group">
-          <label for="perfil-municipio">Municipio</label>
-          <select id="perfil-municipio"></select>
-        </div>
-
-        <div class="form-group">
-          <label for="perfil-telefono">Teléfono (no editable)</label>
-          <input type="text" id="perfil-telefono" disabled>
-        </div>
-
-        <button type="submit" class="btn-primary" id="btn-guardar-perfil">Guardar cambios</button>
-        <p class="mensaje" id="msg-perfil" hidden></p>
-      </form>
+    <!-- TÍTULO DE LA SECCIÓN -->
+    <section class="page-intro">
+      <div class="intro-text">
+        <h2>Administración de Expediente</h2>
+        <p>Actualice sus datos de contacto y credenciales de acceso al sistema municipal.</p>
+      </div>
     </section>
 
-    <!-- Cambiar contraseña -->
-    <section class="card">
-      <h3>Cambiar contraseña</h3>
-      <form id="form-contrasena" novalidate>
-        <div class="form-group">
-          <label for="pass-actual">Contraseña actual</label>
-          <input type="password" id="pass-actual" required>
+    <!-- 1. DATOS PERSONALES -->
+    <article class="legal-section">
+      <header class="section-header">
+        <h3>Información del Titular</h3>
+        <p>Estos datos se utilizarán para notificaciones oficiales sobre sus reportes.</p>
+      </header>
+
+      <div class="section-body">
+        <form id="form-perfil" novalidate class="data-form">
+          <div class="form-grid">
+
+            <div class="form-group">
+              <label for="perfil-nombre">Nombre(s) y apellidos</label>
+              <input type="text" id="perfil-nombre" maxlength="100" required placeholder="Ej. Ana García López">
+            </div>
+
+            <div class="form-group">
+              <label for="perfil-correo">Correo de contacto</label>
+              <input type="email" id="perfil-correo" maxlength="150" required placeholder="ana.garcia@ejemplo.com">
+            </div>
+
+            <div class="form-group">
+              <label for="perfil-municipio">Jurisdicción (Municipio)</label>
+              <select id="perfil-municipio"></select>
+            </div>
+
+            <div class="form-group">
+              <label for="perfil-telefono">Teléfono registrado (No editable)</label>
+              <input type="text" id="perfil-telefono" disabled class="input-readonly">
+              <small class="helper-text">Para modificar su número de teléfono, acuda a las oficinas de movilidad.</small>
+            </div>
+
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn-primary" id="btn-guardar-perfil">Guardar cambios en expediente</button>
+            <p class="mensaje" id="msg-perfil" hidden></p>
+          </div>
+        </form>
+      </div>
+    </article>
+
+    <!-- 2. SEGURIDAD -->
+    <article class="legal-section">
+      <header class="section-header">
+        <h3>Credenciales de Acceso</h3>
+        <p>Actualice su contraseña periódicamente para proteger la confidencialidad de sus reportes.</p>
+      </header>
+
+      <div class="section-body">
+        <form id="form-contrasena" novalidate class="data-form">
+          <div class="form-grid">
+
+            <div class="form-group">
+              <label for="pass-actual">Contraseña vigente</label>
+              <input type="password" id="pass-actual" required>
+            </div>
+
+            <div class="form-group">
+              <label for="pass-nueva">Nueva contraseña (Mínimo 6 caracteres)</label>
+              <input type="password" id="pass-nueva" minlength="6" required>
+            </div>
+
+            <div class="form-group">
+              <label for="pass-confirmar">Confirmar nueva contraseña</label>
+              <input type="password" id="pass-confirmar" minlength="6" required>
+            </div>
+
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn-secondary">Actualizar credenciales</button>
+            <p class="mensaje" id="msg-contrasena" hidden></p>
+          </div>
+        </form>
+      </div>
+    </article>
+
+    <!-- 3. ZONA DE PELIGRO -->
+    <article class="legal-section danger-zone">
+      <header class="section-header">
+        <h3>Suspensión de Cuenta</h3>
+      </header>
+
+      <div class="section-body">
+        <p class="warning-text">
+          Al solicitar la baja del sistema, su cuenta será desactivada y no podrá iniciar sesión nuevamente.
+          <strong>Sus reportes previos y sanciones emitidas seguirán vigentes en el registro público municipal.</strong>
+        </p>
+        <div class="form-actions">
+          <button type="button" class="btn-danger" id="btn-desactivar">Solicitar baja del sistema</button>
         </div>
-
-        <div class="form-group">
-          <label for="pass-nueva">Nueva contraseña (mínimo 6 caracteres)</label>
-          <input type="password" id="pass-nueva" minlength="6" required>
-        </div>
-
-        <div class="form-group">
-          <label for="pass-confirmar">Confirmar nueva contraseña</label>
-          <input type="password" id="pass-confirmar" minlength="6" required>
-        </div>
-
-        <button type="submit" class="btn-primary">Actualizar contraseña</button>
-        <p class="mensaje" id="msg-contrasena" hidden></p>
-      </form>
-    </section>
-
-    <!-- Zona de peligro -->
-    <section class="card card-peligro">
-      <h3>Desactivar cuenta</h3>
-      <p class="hint">Tu cuenta dejará de poder iniciar sesión. Tus reportes se conservan.</p>
-      <button type="button" class="btn-danger" id="btn-desactivar">Desactivar cuenta</button>
-    </section>
+      </div>
+    </article>
 
   </main>
 

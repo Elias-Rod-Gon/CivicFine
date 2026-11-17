@@ -75,7 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const nombre = usuario.nombre || 'Ciudadano';
     if (el.userDisplayName) el.userDisplayName.textContent = `Hola, ${nombre}`;
     if (el.headerUserName) el.headerUserName.textContent = nombre.split(' ')[0];
-    if (el.userSector) el.userSector.textContent = `📍 ${usuario.municipio_nombre || 'Zapopan Centro'}`;
+    if (el.userSector) el.userSector.textContent = ` ${usuario.municipio_nombre || 'Zapopan Centro'}`;
   }
 
   function configurarCierreSesion() {
@@ -199,8 +199,8 @@ document.addEventListener('DOMContentLoaded', () => {
             ${miniatura}
             <div class="report-info">
               <strong>${rep.tipo_infraccion || 'Infracción Vial'}</strong>
-              <span>📍 ${rep.direccion || 'Ubicación no especificada'}</span>
-              <small>Placa: <strong>${placaText}</strong> | 📅 ${fechaText}</small>
+              <span> ${rep.direccion || 'Ubicación no especificada'}</span>
+              <small>Placa: <strong>${placaText}</strong> |  ${fechaText}</small>
             </div>
           </div>
         </article>`;

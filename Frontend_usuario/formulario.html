@@ -3,36 +3,39 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>CivicFine - Crear Reporte</title>
+  <title>CivicFine - Registrar Infracción</title>
   <link rel="stylesheet" href="formulario.css">
   <link rel="icon" href="data:;base64,iVBORw0KGgo=">
 </head>
 <body>
 
-  <!-- Header Mobil Fijo -->
-  <header class="mobile-header">
-    <a href="main_screen_user.html" class="btn-back" id="btn-cancelar">Volver</a>
-    <h2>Nueva Infraccion</h2>
-    <span class="step-indicator" id="step-indicator">1 / 3</span>
+  <!-- HEADER INSTITUCIONAL -->
+  <header class="site-header">
+    <div class="header-top">
+      <a href="main_screen_user.html" class="btn-back" id="btn-cancelar">Volver al panel</a>
+      <span class="step-indicator" id="step-indicator">Paso 1 de 3</span>
+    </div>
+    <div class="header-brand">
+      <h1>Registro de Infracción</h1>
+    </div>
+    <!-- Barra de Progreso -->
+    <div class="progress-bar-container">
+      <div class="progress-bar" id="progress-bar" style="width: 33.33%;"></div>
+    </div>
   </header>
-
-  <!-- Barra de Progreso Superior -->
-  <div class="progress-bar-container">
-    <div class="progress-bar" id="progress-bar" style="width: 33.33%;"></div>
-  </div>
 
   <main class="app-viewport">
     <form id="form-denuncia" novalidate>
 
-      <!-- PASO 1: CAMARA EN VIVO, CAPTURA Y GPS EN TIEMPO REAL -->
+      <!-- PASO 1: EVIDENCIA Y UBICACIÓN -->
       <section class="step-card active" id="step-1">
         <header class="step-header">
-          <span class="badge-step">PASO 1 • EVIDENCIA Y UBICACION</span>
-          <h1>Captura de la infraccion</h1>
-          <p>Encuadre el vehiculo y su placa dentro del visor.</p>
+          <span class="badge-step">PASO 1</span>
+          <h2>Evidencia fotográfica y ubicación</h2>
+          <p>Capture una imagen clara del vehículo y su placa para que la autoridad pueda validar el reporte.</p>
         </header>
 
-        <!-- Visor de Camara Mobile-First (Relacion de aspecto fija) -->
+        <!-- Visor de Cámara -->
         <div class="camera-wrapper">
           <div class="photo-preview-box" id="photo-preview-box">
             <video id="video-stream" autoplay playsinline muted></video>
@@ -41,97 +44,99 @@
 
             <div id="camera-overlay" class="camera-overlay">
               <div class="ocr-frame-guide"></div>
-              <span>Alinee la placa aqui</span>
+              <span>Alinee la placa dentro del marco</span>
             </div>
           </div>
 
           <div class="camera-actions">
-            <button type="button" class="btn-action btn-primary-action" id="btn-capture-photo">
-              Capturar Evidencia
+            <button type="button" class="btn-primary" id="btn-capture-photo">
+              Capturar Fotografía
             </button>
-            <button type="button" class="btn-action btn-secondary-action" id="btn-retake-photo" style="display: none;">
-              Reintentar Fotografia
+            <button type="button" class="btn-secondary" id="btn-retake-photo" style="display: none;">
+              Reintentar Fotografía
             </button>
           </div>
         </div>
 
-        <!-- Reconocimiento de Placa -->
+        <!-- Placa -->
         <div class="info-card">
           <div class="info-card-header">
-            <strong>Reconocimiento de Placa (OCR)</strong>
-            <span class="badge-status-ocr" id="ocr-badge">Esperando captura</span>
+            <strong>Identificación de Placa (OCR)</strong>
+            <span class="badge-status" id="ocr-badge">Esperando captura</span>
           </div>
           <div class="form-group">
+            <label for="input-placa">Placa del vehículo *</label>
             <input type="text" id="input-placa" placeholder="Ej. ABC123A" maxlength="10" required>
-            <small class="hint">Puede corregir la placa manualmente si es necesario.</small>
+            <small class="helper-text">Puede corregir la placa manualmente si el sistema no la detecta correctamente.</small>
           </div>
         </div>
 
-        <!-- Ubicacion Capturada -->
+        <!-- Ubicación -->
         <div class="info-card">
           <div class="info-card-header">
-            <strong>Ubicacion del Incidente (GPS)</strong>
-            <span class="badge-status-gps" id="gps-badge">Inactivo</span>
+            <strong>Ubicación Registrada (GPS)</strong>
+            <span class="badge-status" id="gps-badge">Inactivo</span>
           </div>
           <div class="form-group">
-            <input type="text" id="input-direccion" placeholder="Se obtendra al tomar la foto..." readonly required>
+            <label for="input-direccion">Dirección del incidente *</label>
+            <input type="text" id="input-direccion" placeholder="Se obtendrá automáticamente al capturar la foto..." readonly required>
           </div>
         </div>
 
-        <!-- Tipo de Infraccion -->
+        <!-- Tipo de Infracción -->
         <div class="form-group">
-          <label for="select-infraccion">Tipo de Infraccion *</label>
+          <label for="select-infraccion">Tipo de infracción *</label>
           <select id="select-infraccion" required>
-            <option value="">-- Selecciona la infraccion --</option>
-            <option value="1">Obstruccion de Cruce Peatonal / Banqueta</option>
-            <option value="2">Estacionado en Lugar Reservado / Rampa Discapacidad</option>
-            <option value="3">Estacionamiento en Doble Fila</option>
-            <option value="4">Bloqueo de Cochera / Entrada Privada</option>
+            <option value="">-- Seleccione una opción --</option>
+            <option value="1">Obstrucción de cruce peatonal / banqueta</option>
+            <option value="2">Estacionado en lugar reservado / rampa discapacidad</option>
+            <option value="3">Estacionamiento en doble fila</option>
+            <option value="4">Bloqueo de cochera / entrada privada</option>
           </select>
         </div>
 
-        <button type="button" class="btn-submit" id="btn-step1-next" disabled>
+        <button type="button" class="btn-primary btn-block" id="btn-step1-next" disabled>
           Continuar al Paso 2
         </button>
       </section>
 
-      <!-- PASO 2: CARACTERISTICAS DEL VEHICULO -->
+      <!-- PASO 2: DETALLES DEL VEHÍCULO -->
       <section class="step-card" id="step-2" style="display: none;">
         <header class="step-header">
-          <span class="badge-step">PASO 2 • CARACTERISTICAS</span>
-          <h1>Detalles del vehiculo</h1>
-          <p>Ayude a la autoridad a identificar el automovil reportado.</p>
+          <span class="badge-step">PASO 2</span>
+          <h2>Detalles del vehículo</h2>
+          <p>Proporcione información adicional que ayude a la autoridad a identificar el automóvil.</p>
         </header>
 
         <div class="form-group">
-  <label for="select-marca">Marca del Vehiculo</label>
-  <select id="select-marca">
-    <option value="">-- Selecciona la marca --</option>
-    <option value="Nissan">Nissan</option>
-    <option value="Volkswagen">Volkswagen</option>
-    <option value="Chevrolet">Chevrolet</option>
-    <option value="Ford">Ford</option>
-    <option value="Toyota">Toyota</option>
-    <option value="Honda">Honda</option>
-    <option value="Mazda">Mazda</option>
-    <option value="Kia">Kia</option>
-    <option value="Hyundai">Hyundai</option>
-    <option value="Renault">Renault</option>
-    <option value="Dodge">Dodge</option>
-    <option value="Otra">Otra (escribir)</option>
-  </select>
-  <input type="text" id="input-marca" placeholder="Escribe la marca" style="display: none; margin-top: 6px;">
+          <label for="select-marca">Marca del vehículo</label>
+          <select id="select-marca">
+            <option value="">-- Seleccione la marca --</option>
+            <option value="Nissan">Nissan</option>
+            <option value="Volkswagen">Volkswagen</option>
+            <option value="Chevrolet">Chevrolet</option>
+            <option value="Ford">Ford</option>
+            <option value="Toyota">Toyota</option>
+            <option value="Honda">Honda</option>
+            <option value="Mazda">Mazda</option>
+            <option value="Kia">Kia</option>
+            <option value="Hyundai">Hyundai</option>
+            <option value="Renault">Renault</option>
+            <option value="Dodge">Dodge</option>
+            <option value="Otra">Otra (escribir)</option>
+          </select>
+          <input type="text" id="input-marca" placeholder="Escriba la marca" style="display: none; margin-top: 8px;">
         </div>
 
         <div class="form-group">
-          <label for="input-modelo">Modelo / Submarca</label>
-          <input type="text" id="input-modelo" placeholder="Ej. Versa, Jetta, Aveo"required>
+          <label for="input-modelo">Modelo / Submarca *</label>
+          <input type="text" id="input-modelo" placeholder="Ej. Versa, Jetta, Aveo" required>
         </div>
 
         <div class="form-group">
-          <label for="input-color">Color del Vehiculo</label>
-          <select id="input-color">
-            <option value="">-- Selecciona el color --</option>
+          <label for="input-color">Color del vehículo *</label>
+          <select id="input-color" required>
+            <option value="">-- Seleccione el color --</option>
             <option value="Blanco">Blanco</option>
             <option value="Negro">Negro</option>
             <option value="Gris">Gris</option>
@@ -141,45 +146,46 @@
             <option value="Otro">Otro</option>
           </select>
         </div>
+
         <div class="form-group">
-          <label for="txt-observaciones">Notas u Observaciones Adicionales</label>
-          <textarea id="txt-observaciones" rows="4" placeholder="Ej. El vehiculo no tiene conductor a bordo..."></textarea>
+          <label for="txt-observaciones">Observaciones adicionales</label>
+          <textarea id="txt-observaciones" rows="4" placeholder="Ej. El vehículo obstruye la rampa de acceso..."></textarea>
         </div>
 
         <div class="step-actions-grid">
-          <button type="button" class="btn-secondary-action" id="btn-step2-prev">Atras</button>
-          <button type="button" class="btn-submit" id="btn-step2-next">Revisar Reporte</button>
+          <button type="button" class="btn-secondary" id="btn-step2-prev">Atrás</button>
+          <button type="button" class="btn-primary" id="btn-step2-next">Revisar Reporte</button>
         </div>
       </section>
 
-      <!-- PASO 3: CONFIRMACION Y ENVIO -->
+      <!-- PASO 3: CONFIRMACIÓN -->
       <section class="step-card" id="step-3" style="display: none;">
         <header class="step-header">
-          <span class="badge-step">PASO 3 • VISTA PREVIA</span>
-          <h1>Confirmar y Enviar</h1>
-          <p>Verifique los datos antes de emitir la denuncia formal.</p>
+          <span class="badge-step">PASO 3</span>
+          <h2>Resumen y confirmación</h2>
+          <p>Verifique que los datos sean correctos antes de emitir la denuncia formal.</p>
         </header>
 
         <article class="summary-card">
           <div class="summary-photo">
-            <img id="summary-img" src="" alt="Evidencia">
+            <img id="summary-img" src="" alt="Evidencia fotográfica">
           </div>
 
           <div class="summary-details">
             <div class="summary-row">
-              <span>Placa:</span>
+              <span>Placa reportada:</span>
               <strong id="summary-placa">---</strong>
             </div>
             <div class="summary-row">
-              <span>Infraccion:</span>
+              <span>Infracción:</span>
               <strong id="summary-infraccion">---</strong>
             </div>
             <div class="summary-row">
-              <span>Ubicacion:</span>
+              <span>Ubicación:</span>
               <span id="summary-direccion">---</span>
             </div>
             <div class="summary-row">
-              <span>Vehiculo:</span>
+              <span>Vehículo:</span>
               <span id="summary-vehiculo">---</span>
             </div>
           </div>
@@ -188,14 +194,14 @@
         <div class="terms-check">
           <label>
             <input type="checkbox" id="chk-protesta" required>
-            <span>Declaro bajo protesta de decir verdad que la evidencia fue capturada en tiempo real.</span>
+            <span>Declaro bajo protesta de decir verdad que la evidencia fue capturada en tiempo real y los datos proporcionados son verídicos.</span>
           </label>
         </div>
 
         <div class="step-actions-grid">
-          <button type="button" class="btn-secondary-action" id="btn-step3-prev">Editar</button>
-          <button type="submit" class="btn-submit btn-confirm" id="btn-enviar-reporte">
-            Emitir Denuncia Oficial
+          <button type="button" class="btn-secondary" id="btn-step3-prev">Editar Datos</button>
+          <button type="submit" class="btn-primary btn-confirm" id="btn-enviar-reporte">
+            Emitir Denuncia
           </button>
         </div>
       </section>

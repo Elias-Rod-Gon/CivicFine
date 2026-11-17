@@ -3,34 +3,33 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CivicFine - Acceso y Registro</title>
+  <title>CivicFine - Acceso al Sistema</title>
   <link rel="stylesheet" href="IniciaSesion.css">
   <link rel="icon" href="data:;base64,iVBORw0KGgo=">
 </head>
 <body>
 
-  <header class="mobile-header">
-    <h2>CivicFine</h2>
+  <!-- ENCABEZADO INSTITUCIONAL -->
+  <header class="site-header">
+    <div class="header-brand">
+      <h1>CivicFine</h1>
+      <span>Portal Ciudadano</span>
+    </div>
   </header>
 
-  <div class="auth-wrapper">
-    <main class="auth-card">
+  <main class="auth-wrapper">
+    <article class="auth-card">
 
       <header class="auth-header">
-        <div class="brand-badge">
-          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M12 2L3 7v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-5.45 9-12V7l-9-5z"/>
-            <path d="M12 8v4M12 16h.01"/>
-          </svg>
-        </div>
-        <h1>CivicFine</h1>
-        <span class="subtitle">Plataforma Ciudadana de Movilidad</span>
+        <h2>Acceso al Sistema</h2>
+        <p>Ingrese sus credenciales para consultar o registrar reportes viales.</p>
       </header>
 
+      <!-- Tabs de navegación (Controlados por CSS) -->
       <input type="radio" name="auth-mode" id="mode-login" class="mode-radio" checked>
       <input type="radio" name="auth-mode" id="mode-register" class="mode-radio">
 
-      <nav class="auth-tabs">
+      <nav class="auth-tabs" aria-label="Selección de modo de acceso">
         <label for="mode-login" class="tab-btn">Iniciar Sesión</label>
         <label for="mode-register" class="tab-btn">Crear Cuenta</label>
       </nav>
@@ -41,7 +40,7 @@
         <div class="form-group">
           <label for="login-telefono">Número Telefónico (10 dígitos) *</label>
           <div class="input-prefix-group">
-            <span class="prefix">🇲🇽 +52</span>
+            <span class="prefix">+52</span>
             <input
               type="tel"
               id="login-telefono"
@@ -65,8 +64,8 @@
           >
         </div>
 
-        <button type="submit" class="btn-submit" id="btn-login-submit">
-          Iniciar Sesión
+        <button type="submit" class="btn-primary" id="btn-login-submit">
+          Ingresar al Portal
         </button>
 
       </form>
@@ -76,12 +75,12 @@
 
         <div class="form-group">
           <label for="reg-nombre">Nombre(s) *</label>
-          <input type="text" id="reg-nombre" placeholder="Juan" required autocomplete="given-name">
+          <input type="text" id="reg-nombre" placeholder="Ej. Juan" required autocomplete="given-name">
         </div>
 
         <div class="form-group">
           <label for="reg-apellidos">Apellidos *</label>
-          <input type="text" id="reg-apellidos" placeholder="Pérez Pereira" required autocomplete="family-name">
+          <input type="text" id="reg-apellidos" placeholder="Ej. Pérez Pereira" required autocomplete="family-name">
         </div>
 
         <div class="form-group">
@@ -92,7 +91,7 @@
         <div class="form-group">
           <label for="reg-telefono">Número Telefónico (10 dígitos) *</label>
           <div class="input-prefix-group">
-            <span class="prefix">🇲🇽 +52</span>
+            <span class="prefix">+52</span>
             <input
               type="tel"
               id="reg-telefono"
@@ -111,18 +110,18 @@
           <input type="password" id="reg-contrasena" placeholder="Mínimo 6 caracteres" required minlength="6">
         </div>
 
-        <button type="submit" class="btn-submit btn-register" id="btn-register-submit">
-          Registrarme e Iniciar
+        <button type="submit" class="btn-primary" id="btn-register-submit">
+          Registrar y Acceder
         </button>
 
       </form>
 
       <footer class="auth-footer">
-        <small>Plataforma para la movilidad segura en Zapopan.</small>
+        <small>Plataforma Institucional para la Movilidad Segura.</small>
       </footer>
 
-    </main>
-  </div>
+    </article>
+  </main>
 
   <script src="IniciaSesion.js"></script>
 </body>

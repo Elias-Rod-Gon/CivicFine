@@ -6,194 +6,196 @@
     <title>Estadísticas Viales - CivicFine</title>
     <link rel="stylesheet" href="panel_autoridad.css">
     <link rel="stylesheet" href="estadisticas.css">
+    <link rel="icon" href="data:,">
 
-    <!-- Leaflet CSS & Heatmap Plugin (CDN) -->
+    <!-- Leaflet CSS & Heatmap Plugin -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
 </head>
 <body>
 
-<!-- Barra superior para celulares -->
-<div class="mobile-header">
-    <button id="btn-toggle-menu" aria-label="Abrir menú">☰</button>
-    <h2>CivicFine</h2>
-</div>
+  <!-- HEADER MÓVIL -->
+  <header class="mobile-header">
+    <button id="btn-toggle-menu" aria-label="Abrir menú">
+      <span class="menu-icon"></span>
+    </button>
+    <h2>CivicFine - Autoridad</h2>
+  </header>
 
-<!-- Menú lateral (Misma estructura de panel_autoridad.html) -->
-<aside class="sidebar" id="sidebar">
+  <!-- BARRA LATERAL (SIDEBAR) -->
+  <aside class="sidebar" id="sidebar">
     <div class="brand">
-        <h2>CivicFine</h2>
-        <span>Zapopan Movilidad</span>
+      <h2>CivicFine</h2>
+      <span>Panel de Autoridad</span>
     </div>
     <nav class="menu">
-        <small>PANEL AUTORIDAD</small>
-        <a href="panel_autoridad.html">Reportes viales</a>
-        <a href="estadisticas.html" class="active">Estadísticas viales</a>
+      <small>Gestión Operativa</small>
+      <a href="panel_autoridad.html">Bandeja de Reportes</a>
+      <a href="estadisticas.html" class="active">Estadísticas Viales</a>
     </nav>
-</aside>
+  </aside>
 
-<!-- Área de trabajo principal -->
-<main class="content">
+  <!-- CONTENIDO PRINCIPAL -->
+  <main class="content">
 
-    <!-- Cabecera: municipio y operador -->
+    <!-- TOPBAR -->
     <header class="topbar">
-        <div class="location-info">
-            <span id="sector-actual">Comité de Monitoreo Urbano &gt; Zapopan</span>
+      <div class="location-info">
+        <span id="sector-actual">Comité de Monitoreo Urbano > Zapopan</span>
+      </div>
+      <div class="user-profile">
+        <div class="user-info">
+          <strong id="operador-nombre">Cargando...</strong>
+          <small id="operador-rol">Operador</small>
         </div>
-        <div class="user-profile">
-            <span>
-                <strong id="operador-nombre">Cargando...</strong><br>
-                <small id="operador-rol">Operador</small>
-            </span>
-            <button id="btn-cerrar-sesion">Cerrar Sesión</button>
-        </div>
+        <button class="btn-logout" id="btn-cerrar-sesion">
+          Salir
+        </button>
+      </div>
     </header>
 
-    <!-- Encabezado de la Sección de Estadísticas -->
+    <!-- DASHBOARD Y KPIs -->
     <section class="dashboard">
-        <h1>Estadísticas Viales</h1>
-        <p class="subtitle">Análisis de incidencias, concentraciones geográficas y horas de mayor impacto en Zapopan</p>
+      <h1>Estadísticas Viales</h1>
+      <p class="subtitle">Análisis de incidencias, concentraciones geográficas y horas de mayor impacto en Zapopan.</p>
 
-        <!-- Filtros de Fecha -->
-        <div class="filters-panel" style="margin-top: 15px; margin-bottom: 20px;">
-            <form id="form-filtros-fecha" class="filter-controls" style="display: flex; gap: 15px; align-items: flex-end; flex-wrap: wrap;">
-                <label>
-                    Fecha desde:
-                    <input type="date" id="fecha-desde" required>
-                </label>
+      <div class="kpi-grid">
+        <article class="card green">
+          <small>Total de reportes</small>
+          <strong id="kpi-total-reportes">0</strong>
+          <span>En el rango seleccionado</span>
+        </article>
 
-                <label>
-                    Fecha hasta:
-                    <input type="date" id="fecha-hasta" required>
-                </label>
+        <article class="card orange">
+          <small>Efectividad / Reales</small>
+          <strong id="kpi-porcentaje-reales">0%</strong>
+          <span id="kpi-reales-nota">Validados sobre cerrados</span>
+        </article>
 
-                <div style="display: flex; gap: 8px;">
-                    <button type="submit" id="btn-aplicar-filtros" class="btn-submit" style="padding: 8px 16px;">Aplicar</button>
-                    <button type="button" id="btn-limpiar-filtros" class="btn-clear" style="padding: 8px 16px;">Limpiar (30 días)</button>
-                </div>
-            </form>
-        </div>
+        <article class="card red">
+          <small>Cantidad de cerrados</small>
+          <strong id="kpi-cantidad-cerrados">0</strong>
+          <span>Multados + Descartados</span>
+        </article>
 
-        <!-- Tarjetas KPI -->
-        <div class="kpi-grid">
-            <article class="card green">
-                <small>Total de reportes</small>
-                <strong id="kpi-total-reportes">0</strong>
-                <span>En el rango seleccionado</span>
-            </article>
-
-            <article class="card orange">
-                <small>Efectividad / Reales</small>
-                <strong id="kpi-porcentaje-reales">0%</strong>
-                <span id="kpi-reales-nota">Validados sobre cerrados</span>
-            </article>
-
-            <article class="card red">
-                <small>Cantidad de cerrados</small>
-                <strong id="kpi-cantidad-cerrados">0</strong>
-                <span>Multados + Descartados</span>
-            </article>
-
-            <article class="card gray">
-                <small>Hora pico</small>
-                <strong id="kpi-hora-pico">--:--</strong>
-                <span>Mayor volumen de reportes</span>
-            </article>
-        </div>
+        <article class="card gray">
+          <small>Hora pico</small>
+          <strong id="kpi-hora-pico">--:--</strong>
+          <span>Mayor volumen de reportes</span>
+        </article>
+      </div>
     </section>
 
-    <!-- Sección Mapa de Calor -->
-    <section class="panel-section" style="margin-top: 25px;">
+    <!-- FILTROS DE FECHA -->
+    <section class="filters-panel">
+      <form id="form-filtros-fecha" class="filter-form">
+        <div class="filter-group">
+          <label for="fecha-desde">Fecha desde:</label>
+          <input type="date" id="fecha-desde" required>
+        </div>
+
+        <div class="filter-group">
+          <label for="fecha-hasta">Fecha hasta:</label>
+          <input type="date" id="fecha-hasta" required>
+        </div>
+
+        <div class="filter-actions">
+          <button type="submit" id="btn-aplicar-filtros" class="btn-primary">Aplicar</button>
+          <button type="button" id="btn-limpiar-filtros" class="btn-outline">Limpiar (30 días)</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- MAPA DE CALOR -->
+    <section class="panel-section">
+      <div class="panel-header">
+        <h2>Mapa de Calor de Infracciones</h2>
+      </div>
+      <p class="helper-text">El mapa de calor proyecta únicamente las incidencias que cuentan con coordenadas GPS registradas.</p>
+      <div id="mapa-calor-container"></div>
+    </section>
+
+    <!-- GRÁFICA DE HORAS PICO -->
+    <section class="panel-section">
+      <div class="panel-header">
+        <h2>Distribución por Horas Pico (24 Horas)</h2>
+      </div>
+      <div id="grafica-horas-pico-container">
+        <!-- Renderizado dinámico desde estadisticas.js -->
+      </div>
+    </section>
+
+    <!-- SECCIONES INFERIORES (TOP 5 Y DESGLOSE) -->
+    <div class="split-grid">
+
+      <!-- Top 5 Direcciones -->
+      <section class="panel-section">
         <div class="panel-header">
-            <h2>Mapa de Calor de Infracciones</h2>
+          <h2>Top 5 Direcciones con Más Reportes</h2>
         </div>
-        <p class="helper-text" style="margin-bottom: 10px;">
-            El mapa de calor proyecciona únicamente las incidencias que cuentan con coordenadas GPS registradas.
-        </p>
-        <div id="mapa-calor-container" style="height: 380px; width: 100%; border-radius: 8px; overflow: hidden; border: 1px solid #cbd5e1;"></div>
-    </section>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th style="width: 40px;">#</th>
+                <th>Ubicación / Dirección</th>
+                <th style="text-align: right;">Reportes</th>
+              </tr>
+            </thead>
+            <tbody id="lista-top-direcciones">
+              <tr>
+                <td colspan="3" class="table-loading">Cargando información...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
 
-    <!-- Sección Horas Pico -->
-    <section class="panel-section" style="margin-top: 25px;">
+      <!-- Desglose por Estado -->
+      <section class="panel-section">
         <div class="panel-header">
-            <h2>Distribución por Horas Pico (24 Horas)</h2>
+          <h2>Desglose por Estado</h2>
         </div>
-        <div id="grafica-horas-pico-container" style="min-height: 220px; padding: 15px; background: #fff; border-radius: 8px; border: 1px solid #cbd5e1; margin-top: 10px;">
-            <!-- Renderizado dinámico de la gráfica desde estadisticas.js -->
+        <div class="status-breakdown">
+          <div class="status-item">
+            <span class="status-label">
+              <span class="status-dot dot-pendiente"></span>
+              Pendientes
+            </span>
+            <strong id="count-estado-pendiente">0</strong>
+          </div>
+
+          <div class="status-item">
+            <span class="status-label">
+              <span class="status-dot dot-revision"></span>
+              En revisión
+            </span>
+            <strong id="count-estado-revision">0</strong>
+          </div>
+
+          <div class="status-item">
+            <span class="status-label">
+              <span class="status-dot dot-multado"></span>
+              Multados
+            </span>
+            <strong id="count-estado-multado">0</strong>
+          </div>
+
+          <div class="status-item">
+            <span class="status-label">
+              <span class="status-dot dot-descartado"></span>
+              Descartados
+            </span>
+            <strong id="count-estado-descartado">0</strong>
+          </div>
         </div>
-    </section>
-
-    <!-- Secciones Inferiores (Direcciones Top y Desglose por Estado) -->
-    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 25px;">
-
-        <!-- Top 5 Direcciones -->
-        <section class="panel-section">
-            <div class="panel-header">
-                <h2>Top 5 Direcciones con Más Reportes</h2>
-            </div>
-            <div class="table-container" style="margin-top: 10px;">
-                <table>
-                    <thead>
-                        <tr>
-                            <th style="width: 40px;">#</th>
-                            <th>Ubicación / Dirección</th>
-                            <th style="text-align: right;">Reportes</th>
-                        </tr>
-                    </thead>
-                    <tbody id="lista-top-direcciones">
-                        <tr>
-                            <td colspan="3" style="text-align: center;">Cargando información...</td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-        </section>
-
-        <!-- Desglose por Estado -->
-        <section class="panel-section">
-            <div class="panel-header">
-                <h2>Desglose por Estado</h2>
-            </div>
-            <div style="background: #fff; padding: 15px; border-radius: 8px; border: 1px solid #cbd5e1; margin-top: 10px; display: flex; flex-direction: column; gap: 12px;">
-                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed #e2e8f0; padding-bottom: 8px;">
-                    <span style="display: flex; align-items: center; gap: 8px;">
-                        <span style="width: 10px; height: 10px; border-radius: 50%; background: #f59e0b;"></span>
-                        Pendientes
-                    </span>
-                    <strong id="count-estado-pendiente" style="font-size: 1.1rem;">0</strong>
-                </div>
-
-                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed #e2e8f0; padding-bottom: 8px;">
-                    <span style="display: flex; align-items: center; gap: 8px;">
-                        <span style="width: 10px; height: 10px; border-radius: 50%; background: #3b82f6;"></span>
-                        En revisión
-                    </span>
-                    <strong id="count-estado-revision" style="font-size: 1.1rem;">0</strong>
-                </div>
-
-                <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed #e2e8f0; padding-bottom: 8px;">
-                    <span style="display: flex; align-items: center; gap: 8px;">
-                        <span style="width: 10px; height: 10px; border-radius: 50%; background: #10b981;"></span>
-                        Multados
-                    </span>
-                    <strong id="count-estado-multado" style="font-size: 1.1rem;">0</strong>
-                </div>
-
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <span style="display: flex; align-items: center; gap: 8px;">
-                        <span style="width: 10px; height: 10px; border-radius: 50%; background: #6b7280;"></span>
-                        Descartados
-                    </span>
-                    <strong id="count-estado-descartado" style="font-size: 1.1rem;">0</strong>
-                </div>
-            </div>
-        </section>
+      </section>
 
     </div>
 
-</main>
+  </main>
 
-<script src="estadisticas.js"></script>
+  <script src="estadisticas.js"></script>
 </body>
 </html>

@@ -1,89 +1,123 @@
 /* ==========================================================================
-  CIVICFINE - ESTADÍSTICAS VIALES (PANEL AUTORIDAD)
+   CIVICFINE - ESTADÍSTICAS VIALES (MOBILE FIRST Y EDITORIAL)
    ========================================================================== */
 
-/* Ajustes estructurales de la sección */
-.panel-section {
-  background: #ffffff;
-  border-radius: 8px;
-  border: 1px solid #cbd5e1;
+/*
+  Nota: Se asume que las variables :root (colores, fuentes, etc.)
+  están definidas globalmente en panel_autoridad.css.
+*/
+
+/* ==========================================================================
+   FILTROS DE FECHA
+   ========================================================================== */
+.filters-panel {
+  background: var(--color-surface, #FFFFFF);
+  border: 1px solid var(--color-border, #E2E8F0);
   padding: 16px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  margin-bottom: 24px;
+}
+
+.filter-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.filter-group label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--color-text-main, #0F172A);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.filter-group input[type="date"] {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid var(--color-border, #E2E8F0);
+  border-radius: var(--radius-sm, 2px);
+  font-size: 0.95rem;
+  background-color: var(--color-surface, #FFFFFF);
+  color: var(--color-text-main, #0F172A);
+  outline: none;
+}
+
+.filter-group input[type="date"]:focus {
+  border-color: var(--color-primary, #0B3D91);
+}
+
+.filter-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.filter-actions button {
+  flex: 1;
+}
+
+/* ==========================================================================
+   PANELES
+   ========================================================================== */
+.panel-section {
+  background: var(--color-surface, #FFFFFF);
+  border: 1px solid var(--color-border, #E2E8F0);
+  padding: 16px;
+  margin-bottom: 24px;
 }
 
 .panel-header h2 {
   font-size: 1.1rem;
-  font-weight: 600;
-  color: #1e293b;
+  font-weight: 700;
+  color: var(--color-text-main, #0F172A);
+  margin-bottom: 8px;
 }
 
 .helper-text {
-  font-size: 0.8rem;
-  color: #64748b;
-  margin-top: 4px;
-}
-
-/* ==========================================================================
-  FILTROS DE FECHA
-   ========================================================================== */
-.filters-panel {
-  background: #ffffff;
-  border: 1px solid #cbd5e1;
-  border-radius: 8px;
-  padding: 14px 16px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-}
-
-.filter-controls label {
   font-size: 0.85rem;
-  font-weight: 600;
-  color: #334155;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.filter-controls input[type="date"] {
-  padding: 8px 12px;
-  border: 1px solid #cbd5e1;
-  border-radius: 6px;
-  font-size: 0.88rem;
-  color: #1e293b;
-  outline: none;
-  background-color: #f8fafc;
-}
-
-.filter-controls input[type="date"]:focus {
-  border-color: #0284c7;
-  background-color: #ffffff;
+  color: var(--color-text-muted, #475569);
+  margin-bottom: 16px;
 }
 
 /* ==========================================================================
-  MAPA DE CALOR (LEAFLET)
+   MAPA DE CALOR (LEAFLET)
    ========================================================================== */
 #mapa-calor-container {
+  height: 300px;
+  width: 100%;
+  border: 1px solid var(--color-border, #E2E8F0);
   position: relative;
   z-index: 1;
 }
 
-/* Ajustes de controles de zoom de Leaflet */
 .leaflet-control-zoom {
-  border-radius: 6px !important;
-  overflow: hidden;
-  border: 1px solid #cbd5e1 !important;
+  border-radius: var(--radius-sm, 2px) !important;
+  border: 1px solid var(--color-border, #E2E8F0) !important;
 }
 
 /* ==========================================================================
-  GRÁFICA DE HORAS PICO (BARRAS 24H)
+   GRÁFICA DE HORAS PICO (BARRAS)
    ========================================================================== */
+#grafica-horas-pico-container {
+  min-height: 200px;
+  padding: 16px 0;
+  overflow-x: auto;
+}
+
 .chart-bar-grid {
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
   gap: 4px;
   height: 160px;
-  padding-top: 20px;
-  border-bottom: 2px solid #e2e8f0;
+  border-bottom: 1px solid var(--color-border, #E2E8F0);
+  padding-bottom: 8px;
 }
 
 .chart-bar-item {
@@ -91,118 +125,154 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  height: 100%;
   justify-content: flex-end;
-  position: relative;
+  height: 100%;
 }
 
 .chart-bar-fill {
   width: 100%;
   max-width: 18px;
-  background-color: #0284c7;
-  border-radius: 4px 4px 0 0;
-  transition: height 0.4s ease, background-color 0.2s ease;
+  background-color: var(--color-primary, #0B3D91);
   min-height: 4px;
-}
-
-.chart-bar-fill:hover {
-  background-color: #0369a1;
+  transition: height 0.3s ease;
 }
 
 .chart-bar-fill.peak {
-  background-color: #ef4444;
+  background-color: #DC2626; /* Color de peligro/alerta */
 }
 
 .chart-bar-label {
   font-size: 0.65rem;
-  color: #64748b;
-  margin-top: 6px;
+  color: var(--color-text-muted, #475569);
+  margin-top: 8px;
   text-align: center;
 }
 
 .chart-bar-value {
   font-size: 0.65rem;
   font-weight: 700;
-  color: #334155;
+  color: var(--color-text-main, #0F172A);
   margin-bottom: 4px;
 }
 
 /* ==========================================================================
-  TABLA TOP 5 DIRECCIONES
+   TABLAS (TOP 5 DIRECCIONES)
    ========================================================================== */
-.table-container table {
+.table-container {
+  overflow-x: auto;
+}
+
+table {
   width: 100%;
   border-collapse: collapse;
+  min-width: 300px;
 }
 
-.table-container th {
-  background-color: #f8fafc;
-  color: #475569;
-  font-size: 0.78rem;
+th {
+  background: #F8FAFC;
+  color: var(--color-text-muted, #475569);
+  font-size: 0.75rem;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.5px;
   padding: 10px 12px;
-  border-bottom: 1px solid #cbd5e1;
+  border-bottom: 1px solid var(--color-border, #E2E8F0);
+  text-align: left;
 }
 
-.table-container td {
+td {
   padding: 10px 12px;
-  font-size: 0.85rem;
-  color: #334155;
-  border-bottom: 1px solid #f1f5f9;
+  font-size: 0.9rem;
+  color: var(--color-text-main, #0F172A);
+  border-bottom: 1px solid var(--color-border, #E2E8F0);
 }
 
-.table-container tr:last-child td {
-  border-bottom: none;
-}
-
-.table-container tr:hover td {
-  background-color: #f8fafc;
+.table-loading {
+  text-align: center;
+  color: var(--color-text-muted, #475569);
+  padding: 24px !important;
 }
 
 /* ==========================================================================
-  ADAPTATIVIDAD MOBILE-FIRST (MEDIAS QUERIES)
+   DESGLOSE POR ESTADO
    ========================================================================== */
-@media (max-width: 768px) {
-  .filters-panel {
-    padding: 12px;
+.status-breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.status-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 12px;
+  border-bottom: 1px dashed var(--color-border, #E2E8F0);
+}
+
+.status-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.status-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.9rem;
+  color: var(--color-text-main, #0F172A);
+}
+
+.status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.dot-pendiente { background: #F59E0B; }
+.dot-revision { background: #3B82F6; }
+.dot-multado { background: #10B981; }
+.dot-descartado { background: #64748B; }
+
+.status-item strong {
+  font-size: 1.1rem;
+  color: var(--color-text-main, #0F172A);
+}
+
+/* ==========================================================================
+   GRID PARA SECCIONES INFERIORES
+   ========================================================================== */
+.split-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+}
+
+/* ==========================================================================
+   MEDIA QUERIES (TABLET / ESCRITORIO)
+   ========================================================================== */
+@media (min-width: 768px) {
+  .filter-form {
+    flex-direction: row;
+    align-items: flex-end;
   }
 
-  .filter-controls {
-    flex-direction: column;
-    align-items: stretch !important;
-    gap: 12px !important;
-  }
-
-  .filter-controls label {
-    width: 100%;
-  }
-
-  .filter-controls div {
-    display: flex;
-    gap: 8px;
-    width: 100%;
-  }
-
-  .filter-controls button {
+  .filter-group {
     flex: 1;
   }
 
+  .filter-actions {
+    flex: 0 0 auto;
+  }
+
+  .filter-actions button {
+    flex: initial;
+  }
+
   #mapa-calor-container {
-    height: 280px !important;
+    height: 400px;
   }
 
-  .chart-bar-grid {
-    height: 130px;
-    gap: 2px;
-  }
-
-  .chart-bar-label {
-    font-size: 0.55rem;
-  }
-
-  .chart-bar-value {
-    display: none; /* Ocultar valores numéricos individuales en celulares para no saturar */
+  .split-grid {
+    grid-template-columns: 1fr 1fr;
   }
 }

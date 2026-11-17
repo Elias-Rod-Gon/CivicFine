@@ -9,95 +9,115 @@
 </head>
 <body>
 
+  <!-- HEADER MÓVIL -->
   <header class="mobile-header">
-    <button id="btn-toggle-menu" aria-label="Abrir menú">☰</button>
-    <h2>CivicFine</h2>
+    <button id="btn-toggle-menu" aria-label="Abrir menú">
+      <span class="menu-icon"></span>
+    </button>
+    <h2>CivicFine - Autoridad</h2>
   </header>
 
+  <!-- BARRA LATERAL (SIDEBAR) -->
   <aside class="sidebar" id="sidebar">
     <div class="brand">
       <h2>CivicFine</h2>
-      <span>Panel Autoridad</span>
+      <span>Panel de Autoridad</span>
     </div>
     <nav class="menu">
-      <small>GESTIÓN</small>
-      <a href="#" class="active">📋 Bandeja de Reportes</a>
-      <a href="estadisticas.html">📊 Estadísticas Viales</a>
+      <small>Gestión Operativa</small>
+      <a href="#" class="active">Bandeja de Reportes</a>
+      <a href="estadisticas.html">Estadísticas Viales</a>
     </nav>
   </aside>
 
+  <!-- CONTENIDO PRINCIPAL -->
   <main class="content">
-    <div class="topbar">
+
+    <!-- TOPBAR -->
+    <header class="topbar">
       <div class="location-info">
-        <span>📍 Municipio: Guadalajara, Jalisco</span>
+        <span>Municipio de Guadalajara, Jalisco</span>
       </div>
       <div class="user-profile">
-        <div>
-          <strong id="operador-nombre">Cargando...</strong><br>
+        <div class="user-info">
+          <strong id="operador-nombre">Cargando...</strong>
           <small id="operador-rol">Verificando turno...</small>
         </div>
-        <button onclick="localStorage.clear(); sessionStorage.clear(); window.location.href='/IniciaSesion.html';">
+        <button class="btn-logout" onclick="localStorage.clear(); sessionStorage.clear(); window.location.href='/IniciaSesion.html';">
           Salir
         </button>
       </div>
-    </div>
+    </header>
 
-    <div class="dashboard">
+    <!-- DASHBOARD Y KPIs -->
+    <section class="dashboard">
       <h1>Reportes Ciudadanos</h1>
-      <p class="subtitle">Analiza la evidencia y dictamina las infracciones viales.</p>
+      <p class="subtitle">Analice la evidencia y emita un dictamen sobre las infracciones viales.</p>
 
       <div class="kpi-grid">
-        <div class="card">
+        <article class="card">
           <small>Reportes Hoy</small>
           <strong id="kpi-hoy">--</strong>
-        </div>
-        <div class="card orange">
+          <span>Ingresados en las últimas 24h</span>
+        </article>
+        <article class="card orange">
           <small>Pendientes</small>
           <strong id="kpi-pendientes">--</strong>
-        </div>
-        <div class="card green">
+          <span>Requieren revisión</span>
+        </article>
+        <article class="card green">
           <small>Multados (Semana)</small>
           <strong id="kpi-multados">--</strong>
-        </div>
-        <div class="card">
+          <span>Sanciones emitidas</span>
+        </article>
+        <article class="card">
           <small>Recaudación</small>
-          <strong id="kpi-umas" style="font-size: 1.2rem;">--</strong>
-        </div>
-        <div class="card red">
+          <strong id="kpi-umas" class="text-sm">--</strong>
+          <span>Últimos 7 días</span>
+        </article>
+        <article class="card red">
           <small>Descartados</small>
           <strong id="kpi-descartados">--</strong>
-        </div>
+          <span>Sin evidencia suficiente</span>
+        </article>
       </div>
-    </div>
+    </section>
 
-    <div class="filters">
+    <!-- FILTROS Y BÚSQUEDA -->
+    <section class="filters">
       <div class="search-box">
-        <input type="text" id="input-search" placeholder="Buscar folio o placas...">
-        <button id="btn-clear">Limpiar</button>
-        <button id="btn-actualizar" style="background: #0284c7; color: white; border-color: #0284c7;">↻ Actualizar</button>
+        <input type="text" id="input-search" placeholder="Buscar por folio o placas...">
+        <button class="btn-outline" id="btn-clear">Limpiar</button>
+        <button class="btn-primary" id="btn-actualizar">Actualizar</button>
       </div>
 
       <div class="filter-controls">
-        <label>Estado
+        <div class="filter-group">
+          <label for="filter-status">Estado</label>
           <select id="filter-status">
-            <option value="todos">Todos</option>
-            <option value="revision">Pendientes</option>
+            <option value="todos">Todos los estados</option>
+            <option value="revision">Pendientes / En revisión</option>
             <option value="multado">Multados</option>
             <option value="descartado">Descartados</option>
           </select>
-        </label>
-        <label>Tipo
-          <select id="filter-type">
-            <option value="todos">Todas</option>
-          </select>
-        </label>
-        <label>Fecha (Desde)
-          <input type="date" id="filter-date">
-        </label>
-      </div>
-    </div>
+        </div>
 
-    <div class="table-container">
+        <div class="filter-group">
+          <label for="filter-type">Tipo de infracción</label>
+          <select id="filter-type">
+            <option value="todos">Todas las infracciones</option>
+          </select>
+        </div>
+
+        <div class="filter-group">
+          <label for="filter-date">Fecha (Desde)</label>
+          <input type="date" id="filter-date">
+        </div>
+      </div>
+    </section>
+
+    <!-- TABLA DE REPORTES -->
+    <section class="table-container">
       <table>
         <thead>
           <tr>
@@ -110,77 +130,82 @@
           </tr>
         </thead>
         <tbody id="table-body">
-          <tr><td colspan="6" style="text-align: center; padding: 20px;">Cargando reportes...</td></tr>
+          <tr><td colspan="6" class="table-loading">Cargando reportes...</td></tr>
         </tbody>
       </table>
-    </div>
+    </section>
   </main>
 
+  <!-- MODAL DE EXPEDIENTE Y DICTAMEN -->
   <div id="modal-dictamen" class="modal-expediente" hidden>
-    <div class="modal-contenido wide">
+    <div class="modal-contenido">
       <header class="modal-header">
         <div>
-          <h2>Expediente Ciudadano</h2>
+          <h2>Expediente de Infracción</h2>
           <p class="subtitle" id="modal-folio">#REP-2026-000123</p>
         </div>
-        <button class="btn-cerrar" id="btn-cerrar-modal">✕ Cerrar</button>
+        <button class="btn-cerrar" id="btn-cerrar-modal">Cerrar</button>
       </header>
 
       <div class="modal-body">
         <div class="modal-grid">
 
+          <!-- COLUMNA IZQUIERDA: EVIDENCIA Y DATOS -->
           <div class="evidencia-col">
             <div class="evidencia-box" id="modal-foto-container">
               <span id="modal-foto-texto">Sin imagen adjunta</span>
             </div>
 
-            <div class="plate-box" style="width: 100%; box-sizing: border-box; text-align: center; margin-bottom: 12px;">
+            <div class="plate-box">
               <span>PLACAS REPORTADAS</span>
               <strong id="modal-placa">SIN PLACA</strong>
             </div>
 
-            <div class="vehicle-specs">
+            <div class="data-block">
               <small>FALTA REPORTADA</small>
-              <p id="modal-tipo" style="font-weight: bold; margin-top: 5px;">--</p>
+              <p id="modal-tipo">--</p>
             </div>
 
-            <div class="vehicle-specs">
+            <div class="data-block">
               <small>DESCRIPCIÓN DEL CIUDADANO</small>
-              <p id="modal-descripcion" style="margin-top: 5px; font-size: 0.9rem; font-style: italic;">"Sin descripción"</p>
+              <p id="modal-descripcion" class="text-muted">"Sin descripción"</p>
             </div>
 
-            <div class="vehicle-specs">
-              <small>UBICACIÓN</small>
-              <p id="modal-direccion" style="margin-top: 5px;">--</p>
+            <div class="data-block">
+              <small>UBICACIÓN REGISTRADA</small>
+              <p id="modal-direccion">--</p>
             </div>
           </div>
 
+          <!-- COLUMNA DERECHA: DICTAMEN -->
           <div class="acciones-col">
+
             <div class="decision-tabs-3">
-              <button class="btn-action-tab" data-accion="multar">💰 Multar</button>
-              <button class="btn-action-tab" data-accion="unidad">🚛 Enviar unidad</button>
-              <button class="btn-action-tab" data-accion="descartar">✖ Desestimar</button>
+              <button class="btn-action-tab" data-accion="multar">Multar</button>
+              <button class="btn-action-tab" data-accion="unidad">Enviar Unidad</button>
+              <button class="btn-action-tab" data-accion="descartar">Desestimar</button>
             </div>
 
-            <!-- Panel: MULTAR (Ahora en UMAs) -->
+            <!-- Panel: MULTAR (Monto en UMAs) -->
             <div id="panel-multar" hidden>
               <div class="custom-amount-box">
-                <label>Monto de la multa (UMAs)</label>
+                <label for="monto-umas">Monto de la sanción (UMAs)</label>
                 <input type="number" id="monto-umas" placeholder="Ej. 2.5" step="0.1" min="0.1">
-                <small id="monto-mxn-preview" style="display:block; margin-top:5px; color:#166534; font-weight:bold;">Equivalente: $0.00 MXN</small>
+                <small id="monto-mxn-preview">Equivalente: $0.00 MXN</small>
               </div>
               <div class="form-group">
-                <label>Notas para el expediente (opcional)</label>
-                <textarea id="notas-multa" rows="3" placeholder="Fundamento legal, observaciones..."></textarea>
+                <label for="notas-multa">Notas para el expediente (Opcional)</label>
+                <textarea id="notas-multa" rows="3" placeholder="Fundamento legal u observaciones adicionales..."></textarea>
               </div>
             </div>
 
+            <!-- Panel: ENVIAR UNIDAD -->
             <div id="panel-unidad" hidden>
               <div class="info-dispatch-box">
-                ⚠️ Se enviará una unidad al lugar para verificar in situ.
+                Se enviará una unidad al lugar para verificar la situación in situ.
               </div>
               <div class="form-group">
-                <label>Tipo de unidad</label>
+                <label for="tipo-unidad">Tipo de unidad</label>
                 <select id="tipo-unidad">
                   <option value="patrulla">Patrulla</option>
                   <option value="grua">Grúa</option>
@@ -188,7 +213,7 @@
                 </select>
               </div>
               <div class="form-group">
-                <label>Prioridad</label>
+                <label for="prioridad-unidad">Prioridad</label>
                 <select id="prioridad-unidad">
                   <option value="baja">Baja</option>
                   <option value="media" selected>Media</option>
@@ -196,15 +221,16 @@
                 </select>
               </div>
               <div class="form-group">
-                <label>ETA estimado (minutos)</label>
-                <input type="number" id="eta-unidad" value="15" min="1" max="120" style="padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px;">
+                <label for="eta-unidad">ETA estimado (minutos)</label>
+                <input type="number" id="eta-unidad" value="15" min="1" max="120">
               </div>
             </div>
 
+            <!-- Panel: DESESTIMAR -->
             <div id="panel-descartar" hidden>
               <div class="form-group">
-                <label>Motivo (obligatorio)</label>
-                <select id="motivo-descarte" style="padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px;">
+                <label for="motivo-descarte">Motivo (Obligatorio)</label>
+                <select id="motivo-descarte">
                   <option value="">Selecciona un motivo</option>
                   <option value="foto_no_clara">Foto no clara</option>
                   <option value="placas_no_visibles">Placas no visibles</option>
@@ -215,18 +241,21 @@
                 </select>
               </div>
               <div class="form-group">
-                <label>Detalle adicional (opcional)</label>
+                <label for="detalle-descarte">Detalle adicional</label>
                 <textarea id="detalle-descarte" rows="3"></textarea>
               </div>
             </div>
 
-            <label class="checkbox-firma" style="margin-top: 20px;">
-              <input type="checkbox" id="firma-dictamen">
-              <span>Confirmo que verifiqué visualmente la evidencia y procede el dictamen.</span>
-            </label>
+            <!-- FIRMA Y CONFIRMACIÓN -->
+            <div class="firma-box">
+              <label class="checkbox-firma" for="firma-dictamen">
+                <input type="checkbox" id="firma-dictamen">
+                <span>Confirmo que he verificado visualmente la evidencia y que el dictamen procede conforme a la normativa.</span>
+              </label>
+            </div>
 
             <button class="btn-submit" id="btn-confirmar-dictamen" disabled>
-              Confirmar acción
+              Confirmar Dictamen
             </button>
           </div>
 

@@ -1,125 +1,149 @@
-/* RESET & BASE MOBILE FIRST */
+/* ==========================================================================
+  CIVICFINE - FORMULARIO DE INFRACCIÓN (MOBILE FIRST Y EDITORIAL)
+   ========================================================================== */
+
+:root {
+  --color-primary: #0B3D91;
+  --color-primary-hover: #082f73;
+  --color-bg: #F8FAFC;
+  --color-surface: #FFFFFF;
+  --color-border: #E2E8F0;
+  --color-text-main: #0F172A;
+  --color-text-muted: #475569;
+  --color-danger: #991B1B;
+
+  --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --radius-sm: 2px;
+}
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
   -webkit-tap-highlight-color: transparent;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: var(--font-sans);
 }
 
-html, body {
+body {
   width: 100%;
   min-height: 100vh;
-  min-height: 100dvh;
-  background-color: #0f172a;
-  color: #f8fafc;
+  background-color: var(--color-bg);
+  color: var(--color-text-main);
   display: flex;
   flex-direction: column;
 }
 
-/* HEADER ESTRUCTURAL */
-.mobile-header {
+/* ==========================================================================
+  HEADER INSTITUCIONAL
+   ========================================================================== */
+.site-header {
   position: sticky;
   top: 0;
   z-index: 50;
-  height: 52px;
-  background-color: #1e293b;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 16px;
-  border-bottom: 1px solid #334155;
+  background-color: var(--color-surface);
+  border-bottom: 2px solid var(--color-border);
 }
 
-.mobile-header h2 {
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: #38bdf8;
+.header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--color-border);
 }
 
 .btn-back {
-  color: #94a3b8;
+  color: var(--color-primary);
   text-decoration: none;
   font-size: 0.85rem;
-  font-weight: 500;
-  padding: 8px 0;
+  font-weight: 600;
 }
 
 .step-indicator {
   font-size: 0.75rem;
   font-weight: 700;
-  background: #334155;
-  color: #e2e8f0;
-  padding: 3px 8px;
-  border-radius: 12px;
+  background: var(--color-bg);
+  color: var(--color-text-muted);
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+}
+
+.header-brand {
+  padding: 12px 16px;
+}
+
+.header-brand h1 {
+  font-size: 1.2rem;
+  color: var(--color-text-main);
 }
 
 .progress-bar-container {
   width: 100%;
-  height: 3px;
-  background: #334155;
+  height: 4px;
+  background: var(--color-border);
 }
 
 .progress-bar {
   height: 100%;
-  background: #38bdf8;
-  transition: width 0.25s ease;
+  background: var(--color-primary);
+  transition: width 0.3s ease;
 }
 
-/* CONTENEDOR PRINCIPAL FLUIDO */
+/* ==========================================================================
+  CONTENEDOR PRINCIPAL
+   ========================================================================== */
 .app-viewport {
   flex: 1;
   width: 100%;
-  max-width: 500px;
+  max-width: 600px;
   margin: 0 auto;
-  padding: 12px 16px 24px 16px;
-  display: flex;
-  flex-direction: column;
-}
-
-#form-denuncia {
-  width: 100%;
+  padding: 24px 16px;
 }
 
 .step-card {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 20px;
+}
+
+.step-header {
+  margin-bottom: 8px;
 }
 
 .badge-step {
-  font-size: 0.68rem;
+  font-size: 0.7rem;
   font-weight: 700;
-  color: #38bdf8;
-  letter-spacing: 0.5px;
+  color: var(--color-primary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
-.step-header h1 {
-  font-size: 1.2rem;
-  font-weight: 600;
-  color: #ffffff;
+.step-header h2 {
+  font-size: 1.4rem;
+  color: var(--color-text-main);
+  margin: 4px 0;
 }
 
 .step-header p {
-  font-size: 0.8rem;
-  color: #94a3b8;
-  margin-top: 2px;
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
 }
 
-/* RECUADRO DE CAMARA MOBILE FIRST (Aspect Ratio 4:3 Táctil) */
+/* ==========================================================================
+  CÁMARA Y FOTO
+   ========================================================================== */
 .camera-wrapper {
   display: flex;
   flex-direction: column;
   gap: 12px;
-  width: 100%;
 }
 
 .photo-preview-box {
   width: 100%;
   aspect-ratio: 4 / 3;
-  background: #000000;
-  border: 1px solid #334155;
-  border-radius: 12px;
+  background: #0F172A;
+  border: 1px solid var(--color-border);
   position: relative;
   overflow: hidden;
   display: flex;
@@ -144,141 +168,78 @@ html, body {
   pointer-events: none;
 }
 
-/* Marco del OCR: debe coincidir con RECORTE_OCR en formulario.js (x 10%, y 25%, ancho 80%, alto 50%) */
 .ocr-frame-guide {
   position: absolute;
   left: 10%;
   top: 25%;
   width: 80%;
   height: 50%;
-  border: 2px dashed #38bdf8;
-  border-radius: 8px;
-  background: rgba(56, 189, 248, 0.1);
-  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.35);
-  pointer-events: none;
+  border: 2px dashed #60A5FA;
+  background: rgba(96, 165, 250, 0.1);
+  box-shadow: 0 0 0 9999px rgba(15, 23, 42, 0.5);
 }
 
 .camera-overlay span {
   position: absolute;
   top: 10%;
-  font-size: 0.7rem;
-  color: #ffffff;
+  font-size: 0.75rem;
+  color: #FFFFFF;
   background: rgba(15, 23, 42, 0.85);
   padding: 4px 10px;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   font-weight: 500;
 }
 
-/* BOTONES TACTILES GRANDES (Minimo 48px de alto para pulgares) */
-.btn-action, .btn-submit, .btn-secondary-action {
-  min-height: 48px;
-  border-radius: 8px;
-  font-size: 0.9rem;
-  font-weight: 600;
+.camera-actions {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  cursor: pointer;
-  width: 100%;
-  transition: opacity 0.15s ease;
+  gap: 8px;
 }
 
-.btn-action:active, .btn-submit:active, .btn-secondary-action:active {
-  opacity: 0.8;
-}
-
-.btn-primary-action, .btn-submit {
-  background-color: #0284c7;
-  color: #ffffff;
-}
-
-.btn-confirm {
-  background-color: #16a34a;
-}
-
-.btn-secondary-action {
-  background-color: #334155;
-  color: #f1f5f9;
-}
-
-.btn-submit:disabled {
-  background-color: #1e293b;
-  color: #64748b;
-  cursor: not-allowed;
-  border: 1px solid #334155;
-}
-
-/* TARJETAS DE INFORMACION */
+/* ==========================================================================
+  TARJETAS DE INFORMACIÓN (OCR / GPS)
+   ========================================================================== */
 .info-card {
-  background: #1e293b;
-  border: 1px solid #334155;
-  border-radius: 8px;
-  padding: 12px;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  padding: 16px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 12px;
 }
 
 .info-card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  font-size: 0.78rem;
-  color: #cbd5e1;
+  font-size: 0.85rem;
+  color: var(--color-text-main);
 }
 
-.badge-status-ocr, .badge-status-gps {
-  font-size: 0.68rem;
-  padding: 2px 6px;
-  border-radius: 4px;
-  background: #334155;
-  color: #94a3b8;
+.badge-status {
+  font-size: 0.7rem;
+  padding: 4px 8px;
+  border-radius: var(--radius-sm);
+  background: #F1F5F9;
+  color: var(--color-text-muted);
   font-weight: 600;
+  border: 1px solid var(--color-border);
 }
 
-.badge-status-ocr.success, .badge-status-gps.active {
-  background: #064e3b;
-  color: #34d399;
+.badge-status.success, .badge-status.active {
+  background: #DCFCE7;
+  color: #166534;
+  border-color: #BBF7D0;
 }
 
-.badge-status-ocr.warning {
-  background: #78350f;
-  color: #fcd34d;
+.badge-status.warning {
+  background: #FEF3C7;
+  color: #92400E;
+  border-color: #FDE68A;
 }
 
-/* Vista previa del recorte de la placa */
-#img-recorte-placa {
-  display: block;
-  width: 100%;
-  max-height: 120px;
-  object-fit: contain;
-  background: #000;
-  border: 1px solid #334155;
-  border-radius: 8px;
-  margin-top: 8px;
-}
-
-/* Casilla de confirmación de placa */
-#lbl-confirmar-placa {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-  margin-top: 8px;
-  font-size: 0.8rem;
-  color: #cbd5e1;
-  cursor: pointer;
-}
-
-#lbl-confirmar-placa input[type="checkbox"] {
-  width: 18px;
-  height: 18px;
-  margin-top: 2px;
-  accent-color: #38bdf8;
-  flex-shrink: 0;
-}
-
-/* FORMULARIO E INPUTS MOBILE */
+/* ==========================================================================
+  FORMULARIOS
+   ========================================================================== */
 .form-group {
   display: flex;
   flex-direction: column;
@@ -287,8 +248,10 @@ html, body {
 
 .form-group label {
   font-size: 0.8rem;
-  font-weight: 500;
-  color: #cbd5e1;
+  font-weight: 700;
+  color: var(--color-text-main);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .form-group input,
@@ -297,44 +260,95 @@ html, body {
   width: 100%;
   min-height: 44px;
   padding: 10px 12px;
-  background-color: #0f172a;
-  border: 1px solid #334155;
-  border-radius: 8px;
-  color: #f8fafc;
-  font-size: 0.9rem;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-main);
+  font-size: 0.95rem;
   outline: none;
 }
 
 .form-group input:focus,
 .form-group select:focus,
 .form-group textarea:focus {
-  border-color: #38bdf8;
+  border-color: var(--color-primary);
+  outline: 1px solid var(--color-primary);
 }
 
-.hint {
-  font-size: 0.72rem;
-  color: #64748b;
+.helper-text {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+/* ==========================================================================
+  BOTONES
+   ========================================================================== */
+.btn-primary,
+.btn-secondary,
+.btn-block {
+  min-height: 48px;
+  padding: 12px 20px;
+  border-radius: var(--radius-sm);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: 1px solid transparent;
+  text-align: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-primary {
+  background-color: var(--color-primary);
+  color: #FFFFFF;
+  border-color: var(--color-primary);
+}
+
+.btn-primary:hover {
+  background-color: var(--color-primary-hover);
+}
+
+.btn-secondary {
+  background-color: #F1F5F9;
+  color: var(--color-text-main);
+  border-color: var(--color-border);
+}
+
+.btn-secondary:hover {
+  background-color: #E2E8F0;
+}
+
+.btn-block {
+  width: 100%;
+}
+
+.btn-primary:disabled {
+  background-color: #CBD5E1;
+  color: #94A3B8;
+  border-color: #CBD5E1;
+  cursor: not-allowed;
 }
 
 .step-actions-grid {
   display: grid;
   grid-template-columns: 1fr 2fr;
-  gap: 10px;
-  margin-top: 8px;
+  gap: 12px;
+  margin-top: 16px;
 }
 
-/* PASO 3: RESUMEN */
+/* ==========================================================================
+  PASO 3: RESUMEN
+   ========================================================================== */
 .summary-card {
-  background: #1e293b;
-  border: 1px solid #334155;
-  border-radius: 12px;
-  overflow: hidden;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
 }
 
 .summary-photo {
   width: 100%;
   aspect-ratio: 16 / 9;
-  background: #000;
+  background: #0F172A;
 }
 
 .summary-photo img {
@@ -344,43 +358,56 @@ html, body {
 }
 
 .summary-details {
-  padding: 12px;
+  padding: 16px;
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  font-size: 0.82rem;
+  gap: 12px;
 }
 
 .summary-row {
   display: flex;
   justify-content: space-between;
-  border-bottom: 1px dashed #334155;
-  padding-bottom: 6px;
+  border-bottom: 1px dashed var(--color-border);
+  padding-bottom: 8px;
+  font-size: 0.9rem;
 }
 
-.summary-row span {
-  color: #94a3b8;
+.summary-row span:first-child {
+  color: var(--color-text-muted);
 }
 
 .summary-row strong, .summary-row span:last-child {
-  color: #f8fafc;
+  color: var(--color-text-main);
   text-align: right;
+  font-weight: 600;
 }
 
 .terms-check {
-  font-size: 0.78rem;
-  color: #94a3b8;
+  background: #FFFBEB;
+  border: 1px solid #FDE68A;
+  padding: 16px;
 }
 
 .terms-check label {
   display: flex;
   align-items: flex-start;
-  gap: 10px;
+  gap: 12px;
+  font-size: 0.85rem;
+  color: #92400E;
+  cursor: pointer;
 }
 
 .terms-check input[type="checkbox"] {
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
   margin-top: 2px;
-  accent-color: #0284c7;
+  flex-shrink: 0;
+}
+
+.btn-confirm {
+  background-color: #166534; /* Verde institucional para confirmar */
+  border-color: #166534;
+}
+.btn-confirm:hover {
+  background-color: #14532D;
 }

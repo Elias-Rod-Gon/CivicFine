@@ -3,110 +3,151 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CivicFine - Mis Denuncias</title>
+  <title>CivicFine - Panel Ciudadano</title>
   <link rel="stylesheet" href="main_screen_user.css">
   <link rel="icon" href="data:;base64,iVBORw0KGgo=">
 </head>
 <body>
 
-  <!-- Encabezado Móvil -->
-  <div class="mobile-header">
-    <h2>CivicFine</h2>
-    <div class="header-acciones">
-      <a href="perfil.html" class="btn-perfil" aria-label="Mi perfil" title="Mi perfil">
-        <span class="icono-perfil" aria-hidden="true">👤</span>
-        <span class="user-badge" id="header-user-name">...</span>
-      </a>
+  <!-- ENCABEZADO INSTITUCIONAL -->
+  <header class="site-header">
+    <div class="header-brand">
+      <h1>CivicFine</h1>
+      <span>Portal Ciudadano</span>
     </div>
-  </div>
+    <nav class="header-nav" aria-label="Navegación de usuario">
+      <a href="perfil.html" class="nav-link" id="header-user-name">Mi perfil</a>
+      <button type="button" class="btn-outline" id="btn-cerrar-sesion">Cerrar sesión</button>
+    </nav>
+  </header>
 
-  <div class="app-container">
+  <!-- CONTENIDO PRINCIPAL -->
+  <main class="main-layout">
 
-    <header class="topbar">
-      <div class="user-profile-info">
-        <span class="sector-label" id="user-sector">📍 Municipio no asignado</span>
-        <h1 id="user-display-name">Bienvenido/a</h1>
+    <!-- TÍTULO Y ACCIÓN -->
+    <section class="page-intro" aria-labelledby="page-title">
+      <div class="intro-text">
+        <span class="municipio-badge" id="user-sector">Municipio no asignado</span>
+        <h2 id="page-title">Consulta de Reportes Viales</h2>
+        <p>Bienvenido/a, <strong id="user-display-name">Ciudadano</strong>. Consulte el estado de sus reportes o registre una nueva infracción.</p>
       </div>
-      <button type="button" class="btn-logout" id="btn-cerrar-sesion">Cerrar sesión</button>
-    </header>
+      <div class="intro-action">
+        <a href="formulario.html" class="btn-primary">Registrar nueva infracción</a>
+      </div>
+    </section>
 
-    <main class="content">
-
-      <form id="dashboard-controls" class="dashboard-form">
-        <input type="radio" name="filter-tab" id="tab-todos" class="tab-radio" checked>
-        <input type="radio" name="filter-tab" id="tab-revision" class="tab-radio">
-        <input type="radio" name="filter-tab" id="tab-resueltos" class="tab-radio">
-
-        <section class="kpi-grid">
-          <article class="kpi-card orange">
-            <small>PENDIENTES / EN REVISIÓN</small>
-            <strong id="kpi-pendientes">0</strong>
-            <span>En proceso por la autoridad</span>
-          </article>
-
-          <article class="kpi-card green">
-            <small>REPORTES VALIDADOS</small>
-            <strong id="kpi-validados">0</strong>
-            <span>Boletas de infracción emitidas</span>
-          </article>
-        </section>
-
-        <nav class="filter-nav" aria-label="Filtro de reportes">
-          <label for="tab-todos" class="filter-btn" id="lbl-todos">Todos (0)</label>
-          <label for="tab-revision" class="filter-btn" id="lbl-revision">En revisión (0)</label>
-          <label for="tab-resueltos" class="filter-btn" id="lbl-resueltos">Resueltos (0)</label>
-        </nav>
-
-        <section class="reports-section">
-          <div id="container-reportes" class="reports-list"></div>
-        </section>
+    <!-- BUSCADOR INSTITUCIONAL -->
+    <section class="search-panel" aria-label="Buscador de trámites">
+      <form id="search-form" class="search-form" role="search" onsubmit="event.preventDefault();">
+        <div class="input-wrapper">
+          <label for="search-input">Búsqueda por Folio o Placa</label>
+          <input type="text" id="search-input" placeholder="Ej. REP-2026-000123 o ABC-123" autocomplete="off">
+        </div>
+        <div class="search-actions">
+          <button type="button" class="btn-secondary" id="btn-buscar">Buscar</button>
+          <button type="button" class="btn-text" id="btn-limpiar">Limpiar</button>
+        </div>
       </form>
+    </section>
 
-    </main>
+    <!-- INDICADORES (KPIs) -->
+    <section class="kpi-panel" aria-label="Resumen de reportes">
+      <article class="kpi-item">
+        <span class="kpi-label">Reportes en proceso</span>
+        <strong class="kpi-value" id="kpi-pendientes">0</strong>
+        <span class="kpi-desc">En revisión por la autoridad municipal.</span>
+      </article>
+      <article class="kpi-item">
+        <span class="kpi-label">Infracciones confirmadas</span>
+        <strong class="kpi-value" id="kpi-validados">0</strong>
+        <span class="kpi-desc">Reportes validados y sancionados.</span>
+      </article>
+    </section>
 
-    <a href="formulario.html" class="fab-new-report" aria-label="Registrar nueva denuncia">➕</a>
+    <!-- HISTORIAL DE REPORTES -->
+    <section class="reports-panel" aria-labelledby="reports-title">
+      <header class="panel-header">
+        <h3 id="reports-title">Historial de Reportes</h3>
 
-  </div>
+        <!-- FILTROS SEMÁNTICOS -->
+        <form id="dashboard-controls" class="dashboard-form">
+          <div class="filter-group">
+            <input type="radio" name="filter-tab" id="tab-todos" class="tab-radio" checked>
+            <input type="radio" name="filter-tab" id="tab-revision" class="tab-radio">
+            <input type="radio" name="filter-tab" id="tab-resueltos" class="tab-radio">
 
-  <!-- Vista de detalle del reporte -->
+            <label for="tab-todos" class="tab-label" id="lbl-todos">Todos</label>
+            <label for="tab-revision" class="tab-label" id="lbl-revision">En revisión</label>
+            <label for="tab-resueltos" class="tab-label" id="lbl-resueltos">Resueltos</label>
+          </div>
+        </form>
+      </header>
+
+      <div class="panel-body" id="container-reportes">
+        <!-- El JS inyectará las tarjetas aquí -->
+      </div>
+    </section>
+
+  </main>
+
+  <!-- EXPEDIENTE DE DETALLE (MODAL) -->
   <div id="modal-detalle" class="modal-detalle" hidden>
     <div class="modal-contenido">
+
       <header class="modal-header">
-        <button type="button" id="btn-cerrar-detalle" class="btn-back-detalle">← Volver</button>
-        <h2>Detalle de Reporte</h2>
+        <button type="button" id="btn-cerrar-detalle" class="btn-back">Volver al historial</button>
+        <h2>Expediente Ciudadano</h2>
       </header>
 
       <div class="modal-body">
-        <div class="detalle-foto-wrap">
-          <img id="det-foto" class="detalle-foto" alt="Evidencia del reporte" style="display: none;">
-        </div>
+        <div class="expediente-grid">
 
-        <p class="detalle-folio" id="det-folio"></p>
-        <span class="badge-status" id="det-estado"></span>
+          <!-- COLUMNA IZQUIERDA: EVIDENCIA Y MAPA -->
+          <aside class="expediente-evidence">
+            <div class="foto-container">
+              <img id="det-foto" class="evidencia-foto" alt="Evidencia fotográfica del reporte" style="display: none;">
+            </div>
+            <div class="mapa-container">
+              <iframe id="det-mapa" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+            </div>
+          </aside>
 
-        <div class="detalle-card">
-          <small>Infracción</small>
-          <strong id="det-infraccion"></strong>
-        </div>
+          <!-- COLUMNA DERECHA: DATOS (TABLA) -->
+          <section class="expediente-data">
+            <header class="doc-header">
+              <span class="detalle-folio" id="det-folio"></span>
+              <span class="badge-status" id="det-estado"></span>
+            </header>
 
-        <div class="detalle-card">
-          <small>Placa detectada</small>
-          <strong id="det-placa"></strong>
-          <small>Fecha y hora</small>
-          <span id="det-fecha"></span>
-          <small>Ubicación</small>
-          <span id="det-direccion"></span>
-        </div>
+            <table class="data-table">
+              <tbody>
+                <tr>
+                  <th scope="row">Infracción reportada</th>
+                  <td id="det-infraccion"></td>
+                </tr>
+                <tr>
+                  <th scope="row">Placa del vehículo</th>
+                  <td id="det-placa"></td>
+                </tr>
+                <tr>
+                  <th scope="row">Fecha y hora</th>
+                  <td id="det-fecha"></td>
+                </tr>
+                <tr>
+                  <th scope="row">Ubicación registrada</th>
+                  <td id="det-direccion"></td>
+                </tr>
+                <tr>
+                  <th scope="row">Observaciones</th>
+                  <td id="det-descripcion" class="text-italic"></td>
+                </tr>
+              </tbody>
+            </table>
+          </section>
 
-        <div class="detalle-mapa">
-          <iframe id="det-mapa" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-        </div>
-
-        <div class="detalle-card">
-          <small>Observaciones</small>
-          <span id="det-descripcion"></span>
         </div>
       </div>
+
     </div>
   </div>
 
