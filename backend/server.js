@@ -72,7 +72,12 @@ app.get('/health', async (req, res) => {
       hora_base: rows[0].ahora
     });
   } catch (err) {
-    console.error('[health] error de base de datos:', err.message);
+    console.error('[health] error de base de datos:', {
+      codigo: err && err.code,
+      mensaje: err && err.message,
+      nombre: err && err.name,
+      detalle: err
+    });
     res.status(503).json({ status: 'error', mensaje: 'Base de datos no disponible.' });
   }
 });
