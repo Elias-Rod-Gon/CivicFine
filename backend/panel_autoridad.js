@@ -62,19 +62,31 @@ async function conTransaccion(fn) {
   }
 }
 
-// Verifica que el ID de usuario exista en la BD; si no, toma un ID válido activo
-async function resolverAutoridadValida(cliente, usuarioIdToken) {
-  const { rows } = await cliente.query(
+// Resuelve una autoridad válida existente en la BD para evitar violaciones de Foreign Key
+async function resolverAutoridadYMunicipio(cliente, usuarioIdToken, reporteId) {
+  // 1. Buscar el usuario del token
+  const { rows: uRows } = await cliente.query(
     'SELECT usuario_id, municipio_id FROM usuario WHERE usuario_id = $1',
     [usuarioIdToken]
   );
-  if (rows[0]) return rows[0];
+  if (uRows[0]) {
+    return { autoridadId: uRows[0].usuario_id, municipioId: uRows[0].municipio_id };
+  }
 
-  const { rows: fallback } = await cliente.query(
-    `SELECT usuario_id, municipio_id FROM usuario
-     WHERE rol IN ('autoridad', 'admin') ORDER BY usuario_id ASC LIMIT 1`
+  // 2. Fallback: Si el usuario_id del token no existe en BD, tomar la primera autoridad/admin activa
+  const { rows: fRows } = await cliente.query(
+    `SELECT usuario_id, municipio_id FROM usuario WHERE rol IN ('autoridad', 'admin') ORDER BY usuario_id ASC LIMIT 1`
   );
-  return fallback[0] || { usuario_id: usuarioIdToken, municipio_id: 1 };
+  if (fRows[0]) {
+    return { autoridadId: fRows[0].usuario_id, municipioId: fRows[0].municipio_id };
+  }
+
+  // 3. Fallback final desde el reporte
+  const { rows: rRows } = await cliente.query(
+    'SELECT municipio_id FROM reporte WHERE reporte_id = $1',
+    [reporteId]
+  );
+  return { autoridadId: null, municipioId: rRows[0] ? rRows[0].municipio_id : 1 };
 }
 
 async function municipioDe(usuarioId) {
@@ -103,6 +115,7 @@ async function bloquearReporte(cliente, reporteId, municipioId) {
   );
   const r = rows[0];
   if (!r) return null;
+  if (municipioId && r.municipio_id !== municipioId) return null;
   return r;
 }
 
@@ -357,13 +370,13 @@ router.post(
       const reporteId = Number(req.params.id);
 
       const resultado = await conTransaccion(async (cliente) => {
-        const autoridad = await resolverAutoridadValida(cliente, req.usuario.id);
-        const r = await bloquearReporte(cliente, reporteId, autoridad.municipio_id);
+        const autoridad = await resolverAutoridadYMunicipio(cliente, req.usuario.id, reporteId);
+        const r = await bloquearReporte(cliente, reporteId, autoridad.municipioId);
         if (!r) return { status: 404, body: { error: 'Reporte no encontrado.' } };
         if (!ESTADOS_ACTIVOS.includes(r.estado)) {
           return { status: 409, body: { error: 'Este reporte ya fue dictaminado.' } };
         }
-        if (reclamoVigente(r) && r.asignado_a !== autoridad.usuario_id) {
+        if (reclamoVigente(r) && r.asignado_a !== autoridad.autoridadId) {
           return { status: 409, body: { error: 'Otro operador ya tiene este reporte.' } };
         }
 
@@ -371,10 +384,10 @@ router.post(
           `UPDATE reporte
           SET asignado_a = $1, asignado_en = NOW(), estado = 'en_revision'
           WHERE reporte_id = $2`,
-          [autoridad.usuario_id, reporteId]
+          [autoridad.autoridadId, reporteId]
         );
         await registrarSeguimiento(
-          cliente, reporteId, autoridad.usuario_id, r.estado, 'en_revision', 'Reclamado por operador'
+          cliente, reporteId, autoridad.autoridadId, r.estado, 'en_revision', 'Reclamado por operador'
         );
         return { status: 200, body: { mensaje: 'Reporte reclamado.' } };
       });
@@ -403,8 +416,8 @@ router.post(
       const reporteId = Number(req.params.id);
 
       const resultado = await conTransaccion(async (cliente) => {
-        const autoridad = await resolverAutoridadValida(cliente, req.usuario.id);
-        const r = await bloquearReporte(cliente, reporteId, autoridad.municipio_id);
+        const autoridad = await resolverAutoridadYMunicipio(cliente, req.usuario.id, reporteId);
+        const r = await bloquearReporte(cliente, reporteId, autoridad.municipioId);
         if (!r) return { status: 404, body: { error: 'Reporte no encontrado.' } };
 
         const nuevoEstado = r.estado === 'en_revision' ? 'pendiente' : r.estado;
@@ -415,7 +428,7 @@ router.post(
           [reporteId, nuevoEstado]
         );
         await registrarSeguimiento(
-          cliente, reporteId, autoridad.usuario_id, r.estado, nuevoEstado, 'Liberado por operador'
+          cliente, reporteId, autoridad.autoridadId, r.estado, nuevoEstado, 'Liberado por operador'
         );
         return { status: 200, body: { mensaje: 'Reporte liberado.' } };
       });
@@ -445,8 +458,8 @@ router.post(
       const { tipo_unidad, prioridad, eta_minutos, comentario } = req.body || {};
 
       const resultado = await conTransaccion(async (cliente) => {
-        const autoridad = await resolverAutoridadValida(cliente, req.usuario.id);
-        const r = await bloquearReporte(cliente, reporteId, autoridad.municipio_id);
+        const autoridad = await resolverAutoridadYMunicipio(cliente, req.usuario.id, reporteId);
+        const r = await bloquearReporte(cliente, reporteId, autoridad.municipioId);
         if (!r) return { status: 404, body: { error: 'Reporte no encontrado.' } };
         if (!ESTADOS_ACTIVOS.includes(r.estado)) {
           return { status: 409, body: { error: 'Este reporte ya fue dictaminado.' } };
@@ -456,11 +469,11 @@ router.post(
           `UPDATE reporte
           SET asignado_a = $1, asignado_en = NOW(), estado = 'en_revision'
           WHERE reporte_id = $2`,
-          [autoridad.usuario_id, reporteId]
+          [autoridad.autoridadId, reporteId]
         );
 
         const texto = `Unidad enviada: ${tipo_unidad || 'patrulla'} · prioridad ${prioridad || 'media'} · ETA ${eta_minutos || 15} min${comentario ? ' — ' + comentario : ''}`;
-        await registrarSeguimiento(cliente, reporteId, autoridad.usuario_id, r.estado, 'en_revision', texto);
+        await registrarSeguimiento(cliente, reporteId, autoridad.autoridadId, r.estado, 'en_revision', texto);
 
         return { status: 200, body: { mensaje: 'Unidad enviada.' } };
       });
@@ -477,7 +490,7 @@ router.post(
 );
 
 // ==========================================================================
-// 8. Dictaminar (CORREGIDO: Auto-asigna y valida FK de autoridad)
+// 8. Dictaminar (BLINDADO: Resuelve usuario_id real en BD y maneja UPDATE/INSERT)
 // ==========================================================================
 router.post(
   '/reportes/:id/dictamen',
@@ -499,18 +512,18 @@ router.post(
 
     try {
       const resultado = await conTransaccion(async (cliente) => {
-        // Resolver ID de autoridad existente en la BD para no romper la FK
-        const autoridad = await resolverAutoridadValida(cliente, req.usuario.id);
-        const autoridadIdValido = autoridad.usuario_id;
+        // Resuelve un usuario_id existente en PostgreSQL para evitar fallos de Foreign Key
+        const autoridad = await resolverAutoridadYMunicipio(cliente, req.usuario.id, reporteId);
+        const autoridadIdValido = autoridad.autoridadId;
 
-        const r = await bloquearReporte(cliente, reporteId, autoridad.municipio_id);
+        const r = await bloquearReporte(cliente, reporteId, autoridad.municipioId);
         if (!r) return { status: 404, body: { error: 'Reporte no encontrado.' } };
         if (!ESTADOS_ACTIVOS.includes(r.estado)) {
           return { status: 409, body: { error: 'Este reporte ya fue dictaminado.' } };
         }
 
         // Si está reclamado ACTIVAMENTE por OTRO operador distinto:
-        if (reclamoVigente(r) && r.asignado_a !== autoridadIdValido) {
+        if (reclamoVigente(r) && r.asignado_a && r.asignado_a !== autoridadIdValido) {
           return {
             status: 409,
             body: { error: 'Otro operador ya tiene este reporte en atención.' }
