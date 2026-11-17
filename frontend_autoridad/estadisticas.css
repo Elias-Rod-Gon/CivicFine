@@ -2,11 +2,6 @@
    CIVICFINE - ESTADÍSTICAS VIALES (MOBILE FIRST Y EDITORIAL)
    ========================================================================== */
 
-/*
-  Nota: Se asume que las variables :root (colores, fuentes, etc.)
-  están definidas globalmente en panel_autoridad.css.
-*/
-
 /* ==========================================================================
    FILTROS DE FECHA
    ========================================================================== */
@@ -86,10 +81,11 @@
 }
 
 /* ==========================================================================
-   MAPA DE CALOR (LEAFLET)
+   MAPA DE CALOR (LEAFLET) - BLINDADO CONTRA COLAPSOS
    ========================================================================== */
 #mapa-calor-container {
   height: 300px;
+  min-height: 300px; /* Obliga al mapa a tener altura */
   width: 100%;
   border: 1px solid var(--color-border, #E2E8F0);
   position: relative;
@@ -269,7 +265,8 @@ td {
   }
 
   #mapa-calor-container {
-    height: 400px;
+    height: 450px;
+    min-height: 450px;
   }
 
   .split-grid {

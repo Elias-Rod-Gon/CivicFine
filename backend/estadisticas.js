@@ -10,7 +10,7 @@ if (!SECRET_KEY) {
 }
 
 // ==========================================================================
-// Middlewares (mismos que panel_autoridad.js)
+// Middlewares
 // ==========================================================================
 function verificarToken(req, res, next) {
   const encabezado = req.headers.authorization || '';
@@ -56,7 +56,6 @@ function rangoFechas(desde, hasta) {
 
 // ==========================================================================
 // GET /api/estadisticas?desde=YYYY-MM-DD&hasta=YYYY-MM-DD
-// Devuelve datos para el mapa de calor, horas pico y porcentaje de reportes reales
 // ==========================================================================
 router.get(
   '/',
@@ -68,7 +67,7 @@ router.get(
       const municipioId = await municipioDe(req.usuario.id);
       const { inicio, fin } = rangoFechas(req.query.desde, req.query.hasta);
 
-      // Puntos para el mapa de calor (solo reportes con coordenadas)
+      // Puntos para el mapa de calor (solo reportes con coordenadas válidas)
       const { rows: puntos } = await pool.query(
         `SELECT latitud::float8 AS lat, longitud::float8 AS lng, estado
         FROM reporte
@@ -113,8 +112,6 @@ router.get(
       );
 
       // Totales y porcentaje de reportes reales
-      // Reales = validado (multado). Desestimados = rechazado.
-      // Pendientes y en revisión no entran al porcentaje.
       const conteo = { pendiente: 0, en_revision: 0, validado: 0, rechazado: 0 };
       porEstado.forEach(e => { conteo[e.estado] = e.total; });
 
@@ -124,7 +121,7 @@ router.get(
         ? Number(((conteo.validado / cerrados) * 100).toFixed(1))
         : null;
 
-      // Horas completas de 0 a 23, con 0 donde no hubo reportes
+      // Horas completas de 0 a 23
       const horas = Array.from({ length: 24 }, (_, h) => {
         const fila = porHora.find(r => r.hora === h);
         return { hora: h, total: fila ? fila.total : 0 };
